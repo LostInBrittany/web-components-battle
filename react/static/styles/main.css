@@ -1,0 +1,66 @@
+nav {
+
+}
+
+.material-icons.md-18 { font-size: 18px; }
+.material-icons.md-24 { font-size: 24px; }
+.material-icons.md-36 { font-size: 36px; }
+.material-icons.md-48 { font-size: 48px; }
+
+.logo {
+  margin-left: 10px;
+  height: 100%;
+}
+
+.card-title {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.map {
+  color:white;
+}
+
+.links{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding: 20px;
+}
+
+.links .material-icons, .links a{
+  color:#01579b;
+}
+
+.links a:hover{
+  text-decoration: underline;
+}
+.userForm .card-title {
+  background: transparent;
+}
+
+.input-field__error {
+  color: #f44336;
+}
+
+.info__icon {
+  padding-right: 5px;
+}
+
+.info__label {
+  padding-right: 5px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.info__value {
+  vertical-align: top;
+}
+
+.login {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 100px;
+}

@@ -1,0 +1,32 @@
+:host {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+.links{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.links a {
+  padding: 20px;
+  text-decoration: none;
+  color: #0168AB;  
+}
+
+.links a:hover {  
+  text-decoration: underline;    
+}
+
+.links span {
+  padding-left: 5px;
+}
+
+md-icon{
+  fill:#0168AB;
+  color: #0168AB;
+}

@@ -4,7 +4,8 @@ var express = require('express'),
     bodyParser = require('body-parser'),
     http = require('http'),
     path = require('path'),
-    api = require('./routes/api');
+    api = require('./routes/api'),
+    login = require('./routes/login');
 
 var app = express();
 
@@ -18,6 +19,11 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Methods", "PUT");
     next();
 });
+
+/* LOGIN ROUTES */
+app.post('/api/login', login.login);
+app.post('/api/logout', login.logout);
+
 
 // JSON API
 app.get('/api/peoples', api.listAll);

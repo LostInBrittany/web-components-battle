@@ -1,0 +1,16 @@
+:host {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 100px;
+}
+
+
+frf-login{
+  display: none;
+}
+
+frf-login.ready {
+  display: block;
+}
