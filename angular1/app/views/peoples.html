@@ -1,0 +1,42 @@
+<section class="links">
+    <a href="#/peoples"><md-icon>dashboard</md-icon><span>List</span></a>
+    <a href="#/maps"><md-icon md-svg-src="images/md-map.svg"></md-icon><span>Map</span></a>        
+</section>
+
+<section class="peopleCtnr">
+    <md-card ng-repeat="person in peoples" md-theme="{{ showDarkTheme ? 'dark-grey' : 'default' }}" md-theme-watch>
+      <md-card-title>
+        <md-card-title-text>
+          <span class="md-headline">{{ person.firstname }} {{ person.lastname }}</span>
+          <div class="md-subhead">
+            <md-icon md-svg-src="images/md-email.svg"></md-icon>
+            <a href="mailto:{{ person.firstname }} {{ person.lastname }}&lt;{{ person.email }}&gt;" title="Send an email to {{ person.firstname }} {{ person.lastname }}" class="truncate">{{ person.email }}</a>            
+          </div>
+          <div class="md-subhead">
+            <md-icon md-svg-src="images/md-phone.svg"></md-icon>
+            <a href="tel:{{ person.phone }}" title="Call {{ person.firstname }}">{{ person.phone }}</a>
+          </div>
+          <div>
+            
+            <p>
+              Manager&nbsp;:&nbsp;
+              {{ person.manager }}              
+            </p>
+            <p>
+              Location&nbsp;:&nbsp;<span>{{ person.entity }}</span>
+            </p>
+          </div>
+        </md-card-title-text>
+        <md-card-title-media>
+          <div class="md-media-lg card-media">
+            <img md-card-md-image ng-src="{{ person.photo }}">
+          </div>
+        </md-card-title-media>
+      </md-card-title>
+      <md-card-actions layout="row" layout-align="end center">
+        <a href="#/maps/{{person.id}}" md-button title="Locate">
+           <md-icon md-svg-src="images/md-map.svg"></md-icon>
+         </a>
+      </md-card-actions>
+    </md-card>
+</section>

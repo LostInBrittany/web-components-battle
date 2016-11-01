@@ -1,0 +1,15 @@
+{
+  "name": "angular1",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "~1.5.0",    
+    "angular-route": "~1.5.0",
+    "angular-material":"~1.1.0",
+    "google-map": "GoogleWebComponents/google-map#^1.1.13",
+    "material-design-icons": "~3.0.1",
+    "paper-menu": "PolymerElements/paper-menu#~1.1.0",
+    "polymer": "~1.7.0",
+    "promise-polyfill": "~2.1.0",
+    "web-animations-js": "~2.1.4"
+  }
+}

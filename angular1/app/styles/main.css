@@ -1,0 +1,83 @@
+
+.header{
+    flex-flow: row wrap;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.logo {
+  margin-left: 10px;
+  height: 100%;
+  width:250px;
+}
+
+.loginCtner{
+  width: 100%;
+  display: flex;  
+  justify-content: center;
+  padding-top: 80px;
+}
+
+frf-login {
+    display: none;
+    margin-top: 50px;
+}
+
+frf-login.ready{
+    display: block;
+}
+
+frf-login.logged {
+    display: none;
+}
+
+.links{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.links a {
+  padding: 20px;
+  text-decoration: none;
+  color: #0168AB;  
+}
+
+.links a:hover {  
+  text-decoration: underline;    
+}
+
+.links span {
+  padding-left: 5px;
+}
+
+.links md-icon{
+  fill:#0168AB;
+  color: #0168AB;
+}
+
+.peopleCtnr{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-flow: wrap;  
+  justify-content: center;
+  padding-top: 20px;
+}
+
+.mapCtnr{
+  width: 100%;  
+  display: flex;
+  flex-direction: column;
+  flex-flow: wrap;  
+  justify-content: center;
+  height: 90vh;
+  margin: 20px;  
+}
+
+.mapCtnr google-map {
+  height: 100%;
+  width: 90%;
+  margin: 0;
+  padding: 0;
+}
