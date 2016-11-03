@@ -19,7 +19,7 @@ export class LoginComponent implements OnInit {
   }
 
   login(event){
-    this.loginService.onlogin(event.detail);
+    this.loginService.onlogin(event.detail.userInfo.get());
     this.router.navigate(['/people']);
   }
 
