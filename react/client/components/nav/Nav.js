@@ -15,10 +15,11 @@ class Nav extends React.Component {
   render() {
     return (
       <nav className="light-blue darken-4">
-        <div className="nav-wrapper">
+        <div className="nav-wrapper appNav">
           <Link to="/">
             <img className="logo" src="static/images/logo-people.svg" />
           </Link>
+          <span className="flex"></span>
           <user-link ref="logoutLink" name="Cyril Balit" logout={this.logout}></user-link>
         </div>
       </nav>

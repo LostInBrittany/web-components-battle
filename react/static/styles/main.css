@@ -12,6 +12,11 @@ nav {
   height: 100%;
 }
 
+.appNav{
+  display: flex;
+}
+
+
 .card-title {
   width: 100%;
   background: rgba(0, 0, 0, 0.4);
@@ -19,6 +24,18 @@ nav {
 
 .map {
   color:white;
+  min-height: 300px;
+}
+
+.flex{
+  flex: 1;
+}
+
+google-map {
+  height: 300px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .links{

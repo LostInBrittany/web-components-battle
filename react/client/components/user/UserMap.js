@@ -24,10 +24,12 @@ class UserMap extends React.Component {
   }
 
   render() {
+    
+
     return (
-      <div className="row">
-          <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">    
-              
+      <div className="row map">
+          <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers data-api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">    
+              {this.renderUsers()}
           </google-map>
       </div>
     );
@@ -41,10 +43,24 @@ class UserMap extends React.Component {
 
   renderUsers() {
     const { users, searchKey } = this.props;
-    const displayedUsers = this.filterUsers(searchKey, users);
-
-    return displayedUsers.map(user => this.renderUser(user));
+    return users.map(user => this.renderUser(user));
   }
+
+  renderUser(user) {
+    return (
+      <google-map-marker key={user.id} latitude={user.geo.lat} longitude={user.geo.lng}
+        draggable="true" animation="DROP" title={user.firstname + user.lastname }>
+        <section className="layout vertical center">
+          <a className="username">
+              <span>{user.firstname}</span>
+              <span className="lastname">{user.lastname}</span>
+          </a>
+          <img src={user.photo}/>
+      </section>
+      </google-map-marker>
+    );
+  }
+
 }
 
 export default connect(state => state.users, { getUsers })(UserMap);
