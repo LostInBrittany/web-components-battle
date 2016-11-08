@@ -1,0 +1,81 @@
+<link rel="import" href="/bower_components/polymer/polymer.html">
+
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+
+
+    <dom-module id="frf-confirm" assetpath="elements/">
+        <style>
+            .error {
+                padding: 10px;
+                color: lightgray;
+            }
+        </style>
+        <template>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.0}}" value="{{oldValue}}"></paper-input>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.1}}" value="{{value1}}"></paper-input>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.2}}" value="{{value2}}"></paper-input>
+            <template is="dom-if" if="{{noMatch}}">
+                <span class="error"> Les champs ne sont pas identiques</span>
+            </template>
+        </template>
+        <script>
+            Polymer({
+                is: 'frf-confirm',
+                defaultLabels: [
+                    'Ancien mot de passe',
+                    'Nouveau mot de passe',
+                    'Confirmer mot de passe'
+                ],
+                properties: {
+                    labels: {
+                        type:Array,
+                        value:[
+                            'Ancien mot de passe',
+                            'Nouveau mot de passe',
+                            'Confirmer mot de passe'
+                        ],
+                        notify: false
+                    },
+                    noMatch: {
+                        type: Boolean,
+                        value: false
+                    },
+                    oldValue: {
+                        type: String,
+                        value: ''
+                    },
+                    type: {
+                        type: String,
+                        value: 'text'
+                    },
+                    value1: {
+                        type: String,
+                        value: '',
+                        observer: 'validate'
+                    },
+                    value2: {
+                        type: String,
+                        value: '',
+                        observer: 'validate'
+                    }
+                },
+                created: function () {
+                    // this.labels = this.defaultLabels;
+                },
+                validate: function () {
+                    if (this.value1 && this.value2) {
+                        this.noMatch = this.value1 != this.value2;
+                    } else {
+                        this.noMatch = false;
+                    }
+                },
+                getValues: function () {
+                    return {
+                        oldValue: this.oldValue,
+                        newValue: this.value1
+                    };
+                },
+                hostAttributes: {'constructor': 'FrfConfirm'}
+            });
+        </script>
+    </dom-module>

@@ -1,9 +1,9 @@
 <section class="links">
-    <a href="#/peoples"><md-icon>dashboard</md-icon><span>List</span></a>
-    <a href="#/maps"><md-icon md-svg-src="images/md-map.svg"></md-icon><span>Map</span></a>        
+    <a href="#/peoples"><md-icon md-svg-src="images/dashboard.svg"></md-icon><span>List</span></a>
+    <a href="#/maps"><md-icon md-svg-src="images/md-map.svg"></md-icon><span>Map</span></a>
 </section>
-<section class="mapCtnr">  
-  <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">    
+<section class="mapCtnr">
+  <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">
     <google-map-marker ng-repeat="person in peoples" latitude="{{person.geo.lat}}" longitude="{{person.geo.lng}}"
     draggable="true" animation="DROP" open="{{person===currentPerson}}" title="{{ person.firstname }} {{ person.lastname }}">
       <section class="layout vertical center">
