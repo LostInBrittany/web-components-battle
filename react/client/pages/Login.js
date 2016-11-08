@@ -1,7 +1,9 @@
 import reactPolymer from 'react-polymer'; //IMPORTANT: Must be imported before React.
 import React, { Component } from 'react';
+import { onLogin } from "../actions/login.js";
+import { connect } from "react-redux";
 
-export default class Login extends Component {
+class Login extends Component {
 
     constructor() {
         super();
@@ -24,7 +26,7 @@ export default class Login extends Component {
                 <div className="views">
                     <frf-login ref="frfLogin"                               
                                login-url={loginUrl}                                                              
-                               login-success={this.onLogin}>
+                               login-success={(e)=>this.onLogin(e)}>
                         <span id="title">DevFest Nantes</span>
                         <img id="logo" src="/static/images/devfest.jpg"/>
                     </frf-login>
@@ -35,7 +37,10 @@ export default class Login extends Component {
 
     onLogin(event) {
         var userInfo = event.target.userInfo.get();
+        this.props.onLogin(userInfo);
         window.location.hash='/users';
     }
 
 }
+
+export default connect(null, { onLogin })(Login);
