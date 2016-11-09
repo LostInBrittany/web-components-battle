@@ -72,9 +72,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         @apply(--layout-center);
       }
     </style>
-    
-    <people-service 
-      id="peopleService" 
+
+    <people-service
+      id="peopleService"
       people="{{people}}"></people-service>
 
 
@@ -85,15 +85,24 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         <div class="row">
           <iron-icon class="search_icon" icon="search"></iron-icon>
           <paper-input class="search" value="{{filter}}" label="Search" always-float-label></paper-input>
-        </div>  
+        </div>
       </div>
 
-      <div class="list">
-        <template id="peopleRepeat" is="dom-repeat" items="{{people}}" as="person" filter="_nameInSearch">
-          <people-card person="{{person}}"></people-card>
-        </template>
-      </div>
+      <iron-pages
+          selected="[[mode]]"
+            attr-for-selected="name"
+              fallback-selection="list">
 
+        <div name="list" class="list">
+          <template id="peopleRepeat" is="dom-repeat" items="{{people}}" as="person" filter="_nameInSearch">
+            <people-card person="{{person}}"></people-card>
+          </template>
+        </div>
+
+        <div name="map" class="map">
+          
+        </div>
+      </iron-pages>
   </template>
 
   <script>
@@ -115,7 +124,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
           type:String,
           value:'',
           observer: '_filterChanged'
-        },      
+        },
       },
 
       _selectedChanged: function () {
@@ -128,7 +137,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       },
       _nameInSearch: function(item) {
         var filter=this.filter.toLowerCase();
-        return (item.firstname.toLowerCase().indexOf(filter) >= 0 
+        return (item.firstname.toLowerCase().indexOf(filter) >= 0
           || item.lastname.toLowerCase().indexOf(filter) >= 0);
       },
     });

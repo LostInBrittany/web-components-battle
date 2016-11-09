@@ -1,0 +1,50 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<dom-module id="frf-user" assetpath="model/">
+    <template>
+    </template>
+    <script>
+        Polymer({
+                is: 'frf-user',
+                properties: {
+                    MISSING_ROLE: {
+                        type: String,
+                        value: 'should pass a role as parameter'
+                    }
+                },
+                created: function () {
+                    this.datas = {};
+                },
+                loadFromJSON: function (json) {
+                    for (var i in json) {
+                        this.set('datas' + ('.' + i), json[i]);
+                    }
+                },
+                isUserInRole: function (role) {
+                    if (!role) {
+                        throw new Error(this.MISSING_ROLE);
+                    }
+                    var roles = this.getRoles();
+                    if (roles && roles.indexOf(role) !== -1) {
+                        return true;
+                    }
+                    return false;
+                },
+                getRoles: function () {
+                    return this.get('authorities');
+                },
+                get: function (attr) {
+                    if (this.datas) {
+                        if (!attr) {
+                            return this.datas;
+                        }
+                        return this.datas[attr] || null;
+                    }
+                    return null;
+                },
+                toJSON: function () {
+                    return this.datas;
+                }
+            });
+    </script>
+</dom-module>
