@@ -40,6 +40,7 @@ const router = (
             <IndexRoute component={UserList} />
             <Route path="list" component={UserList}/>
             <Route path="map" component={UserMap}/>
+            <Route path="map/:id" component={UserMap}/>
         </Route>        
       </Route>
     </Router>

@@ -25,7 +25,7 @@ class UserMap extends React.Component {
 
   render() {
     
-
+    console.log('CurrentUSer'+this.props.params.id);
     return (
       <div className="row map">
           <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers data-api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">    
@@ -47,8 +47,9 @@ class UserMap extends React.Component {
   }
 
   renderUser(user) {
-    return (
-      <google-map-marker key={user.id} latitude={user.geo.lat} longitude={user.geo.lng}
+    var open=(this.props.params.id===user.id);
+    return (      
+      <google-map-marker open={open} key={user.id} latitude={user.geo.lat} longitude={user.geo.lng}
         draggable="true" animation="DROP" title={user.firstname + user.lastname }>
         <section className="layout vertical center">
           <a className="username">

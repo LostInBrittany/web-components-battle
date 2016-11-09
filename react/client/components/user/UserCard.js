@@ -14,7 +14,7 @@ class UserCard extends React.Component {
         <div className="card-image">
           <img src={photo} />
           <span className="card-title">{`${firstname} ${lastname}`}
-          <Link to={`/user/map/${id}`} className="btn-flat"><i className="map material-icons md-36">add_location</i></Link>
+          <Link to={`/users/map/${id}`} className="btn-flat"><i className="map material-icons md-36">add_location</i></Link>
           </span>                    
         </div>
         <div className="card-content">          
