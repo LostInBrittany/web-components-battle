@@ -1,0 +1,7 @@
+{
+  "name": "google-map-wrapper",
+  "dependencies": {
+    "google-map": "GoogleWebComponents/google-map#^1.1.13",
+    "iron-flex-layout": "PolymerElements/iron-flex-layout#^1.3.1"
+  }
+}

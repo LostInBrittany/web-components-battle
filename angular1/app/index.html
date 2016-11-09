@@ -9,10 +9,11 @@
     <title></title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width">
-    
-  
+
+
+
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
-    <!-- build:css styles/vendor.css -->    
+    <!-- build:css styles/vendor.css -->
     <!-- bower:css -->
         <link rel="stylesheet" href="bower_components/angular-material/angular-material.css" />
         <!-- endbower -->
@@ -20,29 +21,35 @@
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
     <!-- endbuild -->
+
+    <script>    
+      // setup Polymer options
+      window.Polymer = {lazyRegister: true, dom: 'shadow'};
+    </script>
     <link rel="import" href="elements/hello/hello.html">
     <link rel="import" href="elements/frf-login/frf-login.html">
+    <link rel="import" href="elements/google-map-wrapper/google-map-wrapper.html">
     <link rel="import" href="bower_components/google-map/google-map.html">
     <link rel="import" href="bower_components/google-map/google-map-marker.html">
   </head>
   <body ng-app="angular1App">
-   
+
     <div ng-controller="MainCtrl">
        <md-toolbar md-scroll-shrink class="header">
         <a href="#/login"><img class="logo" src="images/logo-people.svg" /></a>
-        <span class="flex"></span> 
+        <span class="flex"></span>
         <user-link ng-show="userName" name="{{userName}}" logout="onLogout()" bind-polymer-event="logout"></user-link>
-        <a href="#/peoples">    
+        <a href="#/peoples">
           <md-icon  md-svg-src="images/md-list.svg"></md-icon>
         </a>
       </md-toolbar>
         <div class="container" ng-view=""></div>
-      
+
     </div>
 
 
 
-   
+
 
     <!-- build:js scripts/vendor.js -->
     <!-- bower:js -->
@@ -57,7 +64,7 @@
     <script src="bower_components/web-animations-js/web-animations.min.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
-          
+
     <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
