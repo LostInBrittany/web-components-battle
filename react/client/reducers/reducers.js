@@ -5,5 +5,5 @@ import login from "./login.js";
 
 export default {
   users: users,
-  login:login
+  login: login
 };
