@@ -5,7 +5,8 @@ var express = require('express'),
     http = require('http'),
     path = require('path'),
     api = require('./routes/api'),
-    login = require('./routes/login');
+    login = require('./routes/login'),
+    path = require("path");
 
 var app = express();
 
@@ -30,6 +31,8 @@ app.get('/api/peoples', api.listAll);
 app.get('/api/peoples/:id', api.get);
 app.put('/api/peoples/:id', api.update);
 
+
+app.use(express.static(path.join(__dirname, 'static')));
 
 app.listen(app.get('port'), function () {
     console.log('✔ Express server listening on http://localhost:%d/', app.get('port'));
