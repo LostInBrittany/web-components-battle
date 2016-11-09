@@ -3,7 +3,7 @@
 exports.peoples = [
     {
         "id": "5763cd4d9d2a4f259b53c901",
-        "photo": "https://127.0.0.1:3001/img/59.jpg",
+        "photo": "http://127.0.0.1:3001/img/59.jpg",
         "firstname": "Leanne",
         "lastname": "Woodard",
         "entity": "BIOSPAN",
