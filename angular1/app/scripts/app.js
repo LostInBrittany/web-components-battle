@@ -4,11 +4,7 @@ angular.module('angular1App', [
   'ngMaterial','ngRoute'
 ])
   .config(function ($routeProvider) {
-    $routeProvider
-      .when('/login', {
-        templateUrl: 'views/login.html',
-        controller: 'loginCtrl'
-      })
+    $routeProvider            
       .when('/peoples', {
         templateUrl: 'views/peoples.html',
         controller: 'peoplesCtrl'
@@ -22,6 +18,6 @@ angular.module('angular1App', [
         controller: 'mapCtrl'
       })
       .otherwise({
-        redirectTo: '/login'
+        redirectTo: '/peoples'
       });
   });

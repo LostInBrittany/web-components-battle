@@ -2,29 +2,12 @@
     <a href="#/peoples"><md-icon md-svg-src="images/dashboard.svg"></md-icon><span>List</span></a>
     <a href="#/maps"><md-icon md-svg-src="images/md-map.svg"></md-icon><span>Map</span></a>
 </section>
-<section class="mapCtnr">
-  {{JSON.stringify(peoples)}}
-  <google-map-wrapper
+<section class="mapCtnr">  
+  <!--<google-map-wrapper
       loading="{{false}}"
       latitude="48.8534100"
       longitude="2.348800"
       people="{{peoples}}"
-      current-person="{{currentPerson}}">
-          <!--
-    <google-map latitude="48.8534100" longitude="2.348800" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">
-
-      <google-map-marker ng-repeat="person in peoples" latitude="{{person.geo.lat}}" longitude="{{person.geo.lng}}"
-      draggable="true" animation="DROP" open="{{person===currentPerson}}" title="{{ person.firstname }} {{ person.lastname }}">
-        <section class="layout vertical center">
-            <a class="username">
-                <span>{{person.firstname}}</span>
-                <span class="lastname">{{person.lastname}}</span>
-            </a>
-            <img ng-src="{{person.photo}}">
-        </section>
-      </google-map-marker>
-    </google-map>
-
-  -->
-  </google-map-wrapper>
+      current-person="{{currentPerson}}">     
+  </google-map-wrapper>-->
 </section>
