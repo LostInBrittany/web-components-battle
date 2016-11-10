@@ -15,7 +15,7 @@ class UserMap extends React.Component {
   
   constructor() {
         super();
-        reactPolymer.registerAttribute('api-key');
+        reactPolymer.registerAttribute('data-api-key');
         
     }
 

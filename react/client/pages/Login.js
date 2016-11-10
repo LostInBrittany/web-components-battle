@@ -7,8 +7,8 @@ class Login extends Component {
 
     constructor() {
         super();
-        reactPolymer.registerAttribute('login-url');                
-        reactPolymer.registerEvent('login-success','login-success');        
+        //reactPolymer.registerAttribute('login-url');                
+        //reactPolymer.registerEvent('login-success','login-success');        
     }
 
     componentDidMount() {
@@ -24,12 +24,7 @@ class Login extends Component {
             <div className="login">
                 <link rel="import" href="static/elements/frf-login/frf-login.html"/>
                 <div className="views">
-                    <frf-login ref="frfLogin"                               
-                               login-url={loginUrl}                                                              
-                               login-success={(e)=>this.onLogin(e)}>
-                        <span id="title">DevFest Nantes</span>
-                        <img id="logo" src="/static/images/devfest.jpg"/>
-                    </frf-login>
+                    
                 </div>
             </div>
         );

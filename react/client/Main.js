@@ -34,8 +34,7 @@ const router = (
   <Provider store={store}>
     <Router history={history} >
       <Route path="/" component={App} >
-        <IndexRoute component={Login} />
-        <Route path="/login" component={Login}/>
+        <IndexRoute component={Users} />        
         <Route path="/users" component={Users}>
             <IndexRoute component={UserList} />
             <Route path="list" component={UserList}/>
