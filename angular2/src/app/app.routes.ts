@@ -7,7 +7,7 @@ import { MapsComponent } from './people/maps/maps.component';
 
 
 const routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: 'people', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'people', component: PeopleComponent, children:[
     { path: '', redirectTo: 'list', pathMatch: 'prefix'},
