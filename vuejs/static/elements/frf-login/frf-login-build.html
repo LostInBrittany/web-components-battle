@@ -1,0 +1,821 @@
+<html><head><meta charset="UTF-8"></head><body><div hidden="" by-vulcanize=""><dom-module id="frf-user" assetpath="model/">
+    <template>
+    </template>
+    <script>
+        Polymer({
+                is: 'frf-user',
+                properties: {
+                    MISSING_ROLE: {
+                        type: String,
+                        value: 'should pass a role as parameter'
+                    }
+                },
+                created: function () {
+                    this.datas = {};
+                },
+                loadFromJSON: function (json) {
+                    for (var i in json) {
+                        this.set('datas' + ('.' + i), json[i]);
+                    }
+                },
+                isUserInRole: function (role) {
+                    if (!role) {
+                        throw new Error(this.MISSING_ROLE);
+                    }
+                    var roles = this.getRoles();
+                    if (roles && roles.indexOf(role) !== -1) {
+                        return true;
+                    }
+                    return false;
+                },
+                getRoles: function () {
+                    return this.get('authorities');
+                },
+                get: function (attr) {
+                    if (this.datas) {
+                        if (!attr) {
+                            return this.datas;
+                        }
+                        return this.datas[attr] || null;
+                    }
+                    return null;
+                },
+                toJSON: function () {
+                    return this.datas;
+                }
+            });
+    </script>
+</dom-module>
+<dom-module id="frf-login-service" assetpath="service/">
+    <template>
+
+        <!-- AJAX LOADERS -->
+        <iron-ajax id="login" method="POST" url="[[loginUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded" on-response="loginComplete" on-error="loginFailure"></iron-ajax>
+
+        <iron-ajax id="logout" method="POST" url="[[logoutUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded" on-response="logoutComplete" on-error="logoutFailure"></iron-ajax>
+
+        <frf-user id="userInfo"></frf-user>
+
+    </template>
+    <script>
+        Polymer({
+                is: 'frf-login-service',
+                //EXCEPTIONS
+                MISSING_PARAMETER: "missing login parameters",
+                MISSING_PARAMETER_MODE: "missing mode parameter",
+                MISSING_PARAMETER_DOMAIN: "missing domain parameter",
+                MISSING_PARAMETER_USERNAME: "missing username parameter",
+                MISSING_PARAMETER_PASSWORD: "missing password parameter",
+                MISSING_PARAMETER_NEW_PASSWORD: "missing new password parameter",
+                MALFORMED_JSON: "Malformed JSON response",
+                CONFIRM_PASSWORD: "confirm your password",
+                NO_USER_AUTHENTIFIED: "no authentified user",
+                //DEFAULT URLS
+                DEFAULT_LOGIN_URL: "j_spring_security_check",
+                DEFAULT_LOGOUT_URL: "j_spring_security_logout",
+                properties: {
+                    local: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+                    //URL's
+                    loginUrl: {
+                        type: String,
+                        value: 'j_spring_security_check',
+                        notify: false
+                    },
+                    logoutUrl: {
+                        type: String,
+                        value: 'j_spring_security_logout',
+                        notify: false
+                    },
+                    //MODEL
+                    userInfo: { value: null }
+                },
+                created: function () {
+                    this.registerHandlers();
+                },
+                attached: function () {
+                    this.initialize();
+                },
+                initialize: function () {
+                    if (this.local) {
+                        var userInfoASJSON = sessionStorage.getItem(this.getStoragePath());
+                        if (userInfoASJSON) {
+                            this.userInfo = this.$.userInfo;
+                            this.userInfo.loadFromJSON(JSON.parse(userInfoASJSON));
+                            //this.fire('login-success', { userInfo: this.userInfo });
+                        }
+                    }
+                },
+                getStoragePath: function () {
+                    var path=document.location.pathname;
+                    return path+'-userInfo'
+                },
+                login: function (formValues) {
+                    this.checkParams(formValues);
+                    this.set('$.login.body',formValues);
+                    this.$.login.generateRequest();
+                },
+                checkParams: function (formValues, reset) {
+                    if (!formValues) {
+                        throw this.MISSING_PARAMETER;
+                    } else {
+                        if (!formValues.j_frf_mode) {
+                            throw this.MISSING_PARAMETER_MODE;
+                        }
+                        if (!formValues.j_frf_domain) {
+                            throw this.MISSING_PARAMETER_DOMAIN;
+                        }
+                        if (!formValues.j_username) {
+                            throw this.MISSING_PARAMETER_USERNAME;
+                        }
+                        if (!formValues.j_password) {
+                            throw this.MISSING_PARAMETER_PASSWORD;
+                        }
+                        if (reset && !formValues.j_frf_newPassword) {
+                            throw this.MISSING_PARAMETER_NEW_PASSWORD;
+                        }
+                    }
+                },
+                loginComplete: function (event) {
+                    var login = this.$.login;
+                    //correct response mean also status!=0
+                    if (login.lastResponse != null && event.detail.xhr.status != 0) {
+                        this.loginSuccess(login.lastResponse, event);
+                    } else {
+                        this.loginFailure(login.lastError, event);
+                    }
+                },
+                loginSuccess: function (response, event) {
+                    this.handleLogin(response);
+                    this.fire('login-success', { userInfo: this.userInfo });
+                },
+                loginFailure: function (error, event) {
+                    var errorResponse = { errorMessage: 'erreur de connexion'};
+                    var response;
+                    if (error && error.response) {
+                        response = error.response;
+                    }
+                    else {
+                        if (event.request && event.request.xhr && event.request.xhr.response) {
+                            response = event. request.xhr.response;
+                        }
+                    }
+
+                    if (response) {
+                        switch (typeof response) {
+                            case 'string':
+                                errorResponse.errorMessage = response;
+                                break;
+                            case 'object':
+                                errorResponse = response;
+                                break;
+                            default:
+                                errorResponse.errorMessage = 'erreur de connexion';
+                                break;
+                        }
+                    }
+
+                    if(event.detail &&  event.detail.xhr){
+                        errorResponse.isExpire = this.isPasswordExpire(event.detail.xhr.responseText);
+                    }
+                    this.fire('login-error', errorResponse);
+                },
+                isPasswordExpire: function (responseText) {
+                    return this.isExpireResponse(this.responseToJson(responseText));
+                },
+                /**
+                 * Transform the responseText in an object with errorCode and errorMessage properties
+                 * Response is :
+                 * javax.naming.AuthenticationException: [LDAP: error code 49 - INVALID_CREDENTIALS: Bind failed: NO_SUCH_OBJECT - Code utilisateur inconnu ou expiré.]
+                 *
+                 **/
+                responseToJson: function (responseText) {
+                    var re = /.*\[.*error code (\d*) - (.*)]/;
+                    var results = re.exec(responseText);
+                    if (results && results.length > 1) {
+                        return {
+                            errorCode: results[1],
+                            errorMessage: results[2]
+                        };
+                    }
+                    return null;
+                },
+                /**
+                 * For expire :
+                 * errorCode should be 49
+                 * message should contain 'NO_SUCH_OBJECT'
+                 *
+                 **/
+                isExpireResponse: function (response) {
+                    var isExpire = false;
+                    if (response && response.errorCode && response.errorMessage) {
+                        //Check error code
+                        var code = parseInt(response.errorCode);
+                        if (isNaN(code) || code !== 49) {
+                            return false;
+                        }
+                        //Check error message
+                        var message = response.errorMessage;
+                        if (message.indexOf) {
+                            return response.errorMessage.indexOf('NO_SUCH_OBJECT') > -1;
+                        }
+                    }
+                    return isExpire;
+                },
+                logout: function () {
+                    this.$.logout.generateRequest();
+                },
+                logoutComplete: function (event) {
+                    var logout = this.$.logout;
+                    if (event.detail.xhr.status != 0) {
+                        this.logoutSuccess();
+                    } else {
+                        this.logoutFailure(logout.lastError,event);
+                    }
+                },
+                logoutSuccess: function () {
+                    this.clearContext();
+                    this.fire('logout-success');
+                },
+                logoutFailure: function (error,event) {
+                    var detail={
+                        status: '',
+                        statusText: ''
+                    };
+                    if(event && event.request && event.request.xhr){
+                        detail={
+                            status: event.request.xhr.status,
+                            statusText: event.request.xhr.statusText
+                        }
+                    }
+                    this.fire('logout-error', detail);
+                },
+                resetPassword: function (formValues) {
+                    this.checkParams(formValues, true);
+                    this.set('$.login.body', formValues);
+                    this.$.login.generateRequest();
+                },
+                /*
+                 * login was successful, set UserInfo
+                 */
+                handleLogin: function (response) {
+                    if (response) {
+                        // instantiate userInfo
+                        this.userInfo = this.$.userInfo;
+                        this.userInfo.loadFromJSON(response);
+                        // store in sessionStorage
+                        if (this.local) {
+                            var userInfoAsJSON = JSON.stringify(this.userInfo);
+                            sessionStorage.setItem(this.getStoragePath(), userInfoAsJSON);
+                        }
+                    }
+                },
+                /*
+                 * clear contexte upon logout
+                 */
+                clearContext: function () {
+                    this.userInfo = null;
+                    sessionStorage.removeItem(this.getStoragePath());
+                },
+                registerHandlers: function () {
+                    if (window.$ && window.$.ajaxSetup) {
+                        $.ajaxSetup({
+                            statusCode: {
+                                401: function () {
+                                    this.fire('require-authentification');
+                                }.bind(this),
+                                403: function () {
+                                    this.fire('access-denied');
+                                }.bind(this)
+                            }
+                        });
+                    }
+                }
+            });
+    </script>
+</dom-module>
+<dom-module id="frf-confirm" assetpath="elements/">
+        <style>
+            .error {
+                padding: 10px;
+                color: lightgray;
+            }
+        </style>
+        <template>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.0}}" value="{{oldValue}}"></paper-input>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.1}}" value="{{value1}}"></paper-input>
+            <paper-input type="{{type}}" floatinglabel="" label="{{labels.2}}" value="{{value2}}"></paper-input>
+            <template is="dom-if" if="{{noMatch}}">
+                <span class="error"> Les champs ne sont pas identiques</span>
+            </template>
+        </template>
+        <script>
+            Polymer({
+                is: 'frf-confirm',
+                defaultLabels: [
+                    'Ancien mot de passe',
+                    'Nouveau mot de passe',
+                    'Confirmer mot de passe'
+                ],
+                properties: {
+                    labels: {
+                        type:Array,
+                        value:[
+                            'Ancien mot de passe',
+                            'Nouveau mot de passe',
+                            'Confirmer mot de passe'
+                        ],
+                        notify: false
+                    },
+                    noMatch: {
+                        type: Boolean,
+                        value: false
+                    },
+                    oldValue: {
+                        type: String,
+                        value: ''
+                    },
+                    type: {
+                        type: String,
+                        value: 'text'
+                    },
+                    value1: {
+                        type: String,
+                        value: '',
+                        observer: 'validate'
+                    },
+                    value2: {
+                        type: String,
+                        value: '',
+                        observer: 'validate'
+                    }
+                },
+                created: function () {
+                    // this.labels = this.defaultLabels;
+                },
+                validate: function () {
+                    if (this.value1 && this.value2) {
+                        this.noMatch = this.value1 != this.value2;
+                    } else {
+                        this.noMatch = false;
+                    }
+                },
+                getValues: function () {
+                    return {
+                        oldValue: this.oldValue,
+                        newValue: this.value1
+                    };
+                },
+                hostAttributes: {'constructor': 'FrfConfirm'}
+            });
+        </script>
+    </dom-module>
+<dom-module id="frf-login-form" assetpath="elements/">
+        <style>
+            :host {
+                display: block;
+            }
+            .action{
+                margin-top: 15px;
+                @apply(--layout);
+                @apply(--layout-horizontal);
+                @apply(--layout-center);
+                @apply(--layout-self-center);
+            }
+            #loginBtn, #saveBtn{
+                margin-top: 15px;
+            }
+            .domainLabel{
+                margin-top: 15px;
+                font-style: italic;
+                color: lightgrey;
+            }
+        </style>
+        <template>
+            <paper-input id="name" label="Utilisateur" value="[[username]]" error-message="Champs obligatoire" required="true"></paper-input>
+            <!-- LOGIN FORM -->
+            <paper-input id="password" type="password" label="Mot de passe" error-message="Champs obligatoire" value="[[password]]" required="{{_computeIsLoginState(state)}}" hidden$="{{_computeIsResetState(state)}}"></paper-input>
+            <!-- RESET FORM -->
+            <frf-confirm id="confirm" type="{{_computeIsLoginState(state)}}" hidden$="{{_computeIsLoginState(state)}}"></frf-confirm>
+            <template is="dom-if" if="{{showDomain}}">
+                <paper-dropdown-menu id="domain" label="Domaine">
+                    <paper-menu class="dropdown-content" selected="{{selectedDomainIndex}}">
+                        <template is="dom-repeat" items="{{domains}}" as="domain">
+                            <paper-item>{{domain}}</paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-dropdown-menu>
+            </template>
+            <template is="dom-if" if="{{_computeShowDomainLabel(showDomain,showDomainLabel)}}">
+                <span class="domainLabel">Domaine: <span>{{_computeSelectedDomain(selectedDomainIndex)}}</span></span>
+            </template>
+            <!-- LOGIN FOOTER-->
+            <template is="dom-if" if="{{_computeIsLoginState(state)}}">
+                <paper-button id="loginBtn" raised="" on-click="handleClick">Connexion</paper-button>
+                <template is="dom-if" if="{{reset}}">
+                    <div class="action" on-click="setResetState">
+                        <paper-icon-button icon="account-circle"></paper-icon-button>
+                        <span flex="">Changer de mot de passe</span>
+                    </div>
+                </template>
+            </template>
+            <!-- RESET FOOTER -->
+            <template is="dom-if" if="{{_computeIsResetState(state)}}">
+                <paper-button id="saveBtn" raised="" on-click="handleReset">Enregistrer</paper-button>
+                <div class="action" on-click="setLoginState">
+                    <paper-icon-button icon="arrow-back"></paper-icon-button>
+                    <span flex="">Retour</span>
+                </div>
+            </template>
+        </template>
+        <script>
+            LoginForm = (function () {
+                var constructor = Polymer({
+                    is: 'frf-login-form',
+                    _LOGIN_STATE: 'login',
+                    _RESET_STATE: 'reset',
+                    properties: {
+                        captcha: {
+                            type: Boolean,
+                            value: false
+                        },
+                        domains: {
+                            type: Array,
+                            value: [
+                                'ACF2',
+                                'Domaine interne WebSphere',
+                                'FRANFINANCE01',
+                                'Front FAE'
+                            ]
+                        },
+                        new: {
+                            type: Boolean,
+                            value: false
+                        },
+                        reset: {
+                            type: Boolean,
+                            value: false
+                        },
+                        showDomain: {
+                            type: Boolean,
+                            value: false
+                        },
+                        showDomainLabel: {
+                            type: Boolean,
+                            value: true
+                        },
+                        selectedDomainIndex: {
+                            value: '0'
+                        },
+                        state: {
+                            type: String,
+                            value: 'login'
+                        },
+                        url: {
+                            type: String,
+                            value: ''
+                        }
+                    },
+                    ready: function () {
+                        var _this = this;
+                        this.$.name.addEventListener('keypress', function (e) {
+                            _this.onKeyPress(e);
+                        });
+                        this.$.password.addEventListener('keypress', function (e) {
+                            _this.onKeyPress(e);
+                        });
+                        this.setLoginState();
+                        //AUTO LOG
+                        /*this.username='meth';
+                         this.password='meth';
+                         setTimeout(function () {
+                         _this.handleClick();
+                         },300);*/
+                    },
+                    validate: function () {
+                        this.$.name.validate();
+                        this.$.password.validate();
+                    },
+                    isValid: function () {
+                        this.validate();
+                        return !(this.$.name.invalid || this.$.password.invalid || this.selectedDomain == '');
+                    },
+                    getParams: function () {
+                        var params;
+                        var selectedDomain=this.domains[this.selectedDomainIndex];
+                        if (this.state == this._LOGIN_STATE) {
+                            params = {
+                                j_frf_mode: 'LOGIN',
+                                j_frf_domain: selectedDomain,
+                                j_username: this.$.name.value,
+                                j_password: this.$.password.value
+                            };
+                        } else {
+                            var confirmValues = this.$.confirm.getValues();
+                            params = {
+                                j_frf_mode: 'CHANGE_PASSWORD',
+                                j_frf_domain: selectedDomain,
+                                j_username: this.$.name.value,
+                                j_password: confirmValues.oldValue,
+                                j_frf_newPassword: confirmValues.newValue,
+                                j_frf_confirmPassword: confirmValues.newValue
+                            };
+                        }
+                        return params;
+                    },
+                    onKeyPress: function (e) {
+                        if (e.keyCode == 13) {
+                            this.handleClick();
+                        }
+                    },
+                    handleClick: function () {
+                        if (this.isValid()) {
+                            this.fire('submit');
+                        }
+                    },
+                    handleReset: function () {
+                        this.fire('reset');
+                    },
+                    setResetState: function () {
+                        this.state = this._RESET_STATE;
+                    },
+                    setLoginState: function () {
+                        this.state = this._LOGIN_STATE;
+                    },
+                    _computeIsResetState: function (state) {
+                        return state == this._RESET_STATE;
+                    },
+                    _computeIsLoginState: function (state) {
+                        return state == this._LOGIN_STATE;
+                    },
+                    _computeSelectedDomain: function (selectedDomainIndex) {
+                        return this.domains[this.selectedDomainIndex];
+                    },
+                    _computeShowDomainLabel: function (showDomain,showDomainLabel) {
+                        return !showDomain && showDomainLabel;
+                    }
+                });
+                return constructor;
+            })();
+        </script>
+    </dom-module>
+</div><dom-module id="frf-login">
+    <style>
+
+        :host {
+            display: block;
+        }
+
+        :host(.logged) {
+            background-color: white;
+        }
+
+        :host(.logged) ::content #title, :host(.logged) ::content #logo {
+            display: none;
+        }
+
+
+        #container {
+            height: auto;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            -webkit-transition: all .5s ease;
+            -moz-transition: all .5s ease;
+            transition: all .5s ease;
+            @apply(--layout);
+            @apply(--layout-vertical);
+        }
+
+        #content {
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+        }
+
+        #loginForm{
+            @apply(--layout);
+            @apply(--layout-vertical);
+        }
+
+        .action{
+            @apply(--layout);
+            @apply(--layout-horizontal);
+            @apply(--layout-center);
+            @apply(--layout-self-center);
+        }
+
+        .action span {
+            text-transform: uppercase;
+        }
+
+        /* FORM CONTAINER */
+        #container {
+            font-family: 'RobotoDraft', sans-serif;
+            background-color: white;
+            color: black;
+            /* apply a mixin */
+            @apply(--container-theme);
+        }
+
+
+        /* FORM LOGO*/
+        ::content #logo {
+            height: 64px;
+            width: 64px;
+            /* apply a mixin */
+            @apply(--logo-theme);
+        }
+
+        /* FORM TITLE*/
+        ::content #title {
+            color: black;
+            padding-left: 20px;
+            font-size: 24px;
+            text-transform: uppercase;
+            /* apply a mixin */
+            @apply(--title-theme);
+        }
+
+        /* Logout link*/
+        .logout {
+            padding: 10px;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Error message */
+        .error {
+            color: red;
+            margin: 0 auto;
+        }
+
+        :host {
+            --container-theme: {
+                border-radius: 15px;
+            };
+
+            --logo-theme: {
+                border: 2px solid #880000;
+                border-radius: 50%;
+            };
+
+            --title-theme: {
+                color: #cc0000;
+            };
+        }
+
+    </style>
+    <template>
+        <frf-login-service id="loginService" local="" login-url="[[loginUrl]]" logout-url="[[logoutUrl]]" on-login-success="onlogin" on-login-error="onloginError" on-logout-success="onlogout" on-logout-error="onlogoutError" on-reset-success="onrest" on-reset-error="onresetError">
+        </frf-login-service>
+
+
+        <paper-material id="container">
+            <div id="content">
+                <content select="#logo"></content>
+                <content></content>
+            </div>
+            <!-- LOGIN VIEW -->
+            <template is="dom-if" if="{{!islogged}}">
+                <frf-login-form id="loginForm" show-domain-label="[[showDomainLabel]]" show-domain="[[domain]]" reset="[[reset]]" on-submit="submitForm" on-reset="resetPassword">
+                </frf-login-form>
+            </template>
+            <!-- LOGGED VIEW -->
+            <template is="dom-if" if="{{islogged}}">
+                <div class="action" on-click="logout">
+                    <paper-icon-button icon="account-circle"></paper-icon-button>
+                    <span>{{userName}}</span><a class="logout">logout</a>
+                </div>
+            </template>
+
+            <!-- Error Message -->
+            <span class="error">{{message}}</span>
+
+        </paper-material>
+    </template>
+    <script>
+        Polymer({
+                is: 'frf-login',
+                properties: {
+                    captcha: {
+                        type: Boolean,
+                        value: false
+                    },
+                    domain: {
+                        type: Boolean,
+                        value: false
+                    },
+                    loginUrl: {
+                        type: String,
+                        value: '',
+                        notify: true
+                    },
+                    logoutUrl: {
+                        type: String,
+                        value: ''
+                    },
+                    reset: {
+                        type: Boolean,
+                        value: false
+                    },
+                    userName: {
+                        type: String,
+                        value: ''
+                    },
+                    islogged: {
+                        type: Boolean,
+                        value: false
+                    },
+                    showDomainLabel: {
+                        type: Boolean,
+                        value: false
+                    }
+                },
+                ready: function () {
+                    Polymer.dom(this).classList.add('ready');
+                },
+                onlogin: function (event) {
+                    this.setContext(event.detail.userInfo);
+                },
+                onlogout: function () {
+                    this.clearContext();
+                },
+                onreset: function () {
+                    this.setContext(event.detail.userInfo);
+                },
+                onloginError: function (e, error) {
+                    this.message = 'Erreur de connexion: ' + error.errorMessage;
+                },
+                onlogoutError: function () {
+                    this.message = 'Erreur de d\uFFFDconnexion';
+                },
+                logout: function () {
+                    this.$.loginService.logout();
+                },
+                submitForm: function () {
+                    //get Form values
+                    var loginForm = this.$$("frf-login-form");
+                    var params = loginForm.getParams();
+                    //login
+                    this.$.loginService.login(params);
+                },
+                resetPassword: function () {
+                    //get Form values
+                    var loginForm = this.$$("frf-login-form");
+                    var params = loginForm.getParams();
+                    //reset and login
+                    this.$.loginService.resetPassword(params);
+                },
+                /*
+                 * clear contexte upon logout
+                 */
+                setContext: function (user) {
+                    this.message = '';
+                    this.userInfo = user;
+                    this.userName = this.userInfo.get('name');
+                    this.islogged = true;
+                    Polymer.dom(this).classList.add('logged');
+                },
+                /*
+                 * clear contexte upon logout
+                 */
+                clearContext: function () {
+                    this.islogged = false;
+                    this.userInfo = null;
+                    /*var loginForm = this.$$("frf-login-form");
+                     loginForm.username="";
+                     loginForm.password="";*/
+                    Polymer.dom(this).classList.remove('logged');
+                    this.$.loginService.clearContext();
+                },
+                /*
+                 * has current user successfully authenticated ?
+                 */
+                isUserAuthenticated: function () {
+                    return !!(this.userInfo && this.userInfo instanceof UserInfo);
+                },
+                /*
+                 * Return currentUser
+                 */
+                getCurrentUser: function () {
+                    if (this.userInfo && this.userInfo instanceof UserInfo) {
+                        return this.userInfo;
+                    } else {
+                        throw this.NO_USER_AUTHENTIFIED;
+                    }
+                },
+                /*
+                 * Check if connected User is endorsed with role
+                 */
+                isUserInRole: function (role) {
+                    var userInfo = this.getCurrentUser();
+                    return userInfo.isUserInRole(role);
+                }
+            });
+    </script>
+</dom-module>
+</body></html>
