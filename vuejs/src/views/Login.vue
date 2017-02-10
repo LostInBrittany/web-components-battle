@@ -1,7 +1,7 @@
 <template>
   <section class="container">    
       <frf-login
-      login-url="http://localhost:3001/api/login"
+      :login-url="loginUrl"
       @login-success="onLogin">
       <span id="title">Snowcamp 2017</span>
       <img id="logo" src="../assets/images/snowcamp.png"/>
@@ -18,6 +18,7 @@ export default {
   data () {
     return {
       person: {},
+      loginUrl:'http://localhost:3001/api/login',
       msg: 'Welcome to Your Vue.js App'
     }
   },  
