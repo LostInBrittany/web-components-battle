@@ -7,7 +7,6 @@ class Login extends Component {
 
     constructor() {
         super();
-        reactPolymer.registerAttribute('login-url');                
         reactPolymer.registerEvent('login-success','login-success');        
     }
 
