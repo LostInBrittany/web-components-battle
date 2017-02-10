@@ -3,8 +3,8 @@
       <frf-login
       login-url="http://localhost:3001/api/login"
       @login-success="onLogin">
-      <span id="title">DevFest Nantes</span>
-      <img id="logo" src="../assets/images/devfest.jpg"/>
+      <span id="title">Snowcamp 2017</span>
+      <img id="logo" src="../assets/images/snowcamp.png"/>
       </frf-login>
   </section>
 </template>

@@ -26,9 +26,9 @@ class Login extends Component {
                 <div className="views">
                     <frf-login ref="frfLogin"                               
                                login-url={loginUrl}                                                              
-                               login-success={(e)=>this.onLogin(e)}>
-                        <span id="title">DevFest Nantes</span>
-                        <img id="logo" src="/static/images/devfest.jpg"/>
+                               login-success={(e)=>this.onLogin(e)}>                        
+                        <span id="title">Snowcamp 2017</span>
+                        <img id="logo" src="/static/images/snowcamp.png"/>
                     </frf-login>
                 </div>
             </div>
