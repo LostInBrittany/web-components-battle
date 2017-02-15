@@ -9,7 +9,7 @@
     "postbuild": "npm run deploy",
     "deploy": "firebase deploy",
     "server": "node server/server.js",
-    "start": "ng serve",
+    "start": "ng serve --port 9001",
     "sw": "sw-precache --config=sw-precache-config.json --verbose --no-handle-fetch",
     "lint": "tslint \"src/**/*.ts\"",
     "test": "ng test",

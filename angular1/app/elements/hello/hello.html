@@ -36,6 +36,7 @@
           var shadow = this.createShadowRoot();
           shadow.appendChild(clone);
           this.setEvents();
+          this.setName('Hello world!!!');
         }
       },
       setEvents: {
@@ -53,10 +54,15 @@
       attributeChangedCallback: {
         value:function(attr){
             if(attr==="name"){
-              var span = this.shadowRoot.querySelector('.name');
-              if (span.textContent || span.textContent === "") {
-                span.textContent = this.getAttribute( attr );
-              }
+              this.setName(this.getAttribute(attr));              
+            }            
+        }
+      },
+      setName:{
+        value:function(name){            
+            var span = this.shadowRoot.querySelector('.name');
+            if (span.textContent || span.textContent === "") {
+              span.textContent = name;
             }            
         }
       }
