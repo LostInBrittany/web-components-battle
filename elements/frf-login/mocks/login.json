@@ -1,0 +1,5 @@
+{ "name":"cyril balit",
+  "firstname":"cyril",
+  "lastname":"balit",
+  "authorities": ["admin"]
+}

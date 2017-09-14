@@ -1,38 +1,30 @@
+<link rel="import" href="./bower_components/polymer/polymer-element.html">
 
-<link rel="import" href="../bower_components/polymer/polymer.html">
-
-<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="./bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="./frf-user.html">
 
-<dom-module id="frf-login-service" assetpath="service/">
+<dom-module id="frf-login-service">
     <template>
 
         <!-- AJAX LOADERS -->
-        <iron-ajax id="login" method="POST" url="[[loginUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded" on-response="loginComplete" on-error="loginFailure"></iron-ajax>
+        <iron-ajax id="login" method="GET" url="[[loginUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded"
+            on-response="loginComplete" on-error="loginFailure"></iron-ajax>
 
-        <iron-ajax id="logout" method="POST" url="[[logoutUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded" on-response="logoutComplete" on-error="logoutFailure"></iron-ajax>
+        <iron-ajax id="logout" method="POST" url="[[logoutUrl]]" handle-as="json" content-type="application/x-www-form-urlencoded"
+            on-response="logoutComplete" on-error="logoutFailure"></iron-ajax>
 
         <frf-user id="userInfo"></frf-user>
 
     </template>
     <script>
-        Polymer({
-                is: 'frf-login-service',
-                //EXCEPTIONS
-                MISSING_PARAMETER: "missing login parameters",
-                MISSING_PARAMETER_MODE: "missing mode parameter",
-                MISSING_PARAMETER_DOMAIN: "missing domain parameter",
-                MISSING_PARAMETER_USERNAME: "missing username parameter",
-                MISSING_PARAMETER_PASSWORD: "missing password parameter",
-                MISSING_PARAMETER_NEW_PASSWORD: "missing new password parameter",
-                MALFORMED_JSON: "Malformed JSON response",
-                CONFIRM_PASSWORD: "confirm your password",
-                NO_USER_AUTHENTIFIED: "no authentified user",
-                //DEFAULT URLS
-                DEFAULT_LOGIN_URL: "j_spring_security_check",
-                DEFAULT_LOGOUT_URL: "j_spring_security_logout",
-                properties: {
+        class FrfLoginService extends Polymer.Element {
+
+
+            static get is() { return 'frf-login-service' }
+
+            static get properties() {
+                return {
                     local: {
                         type: Boolean,
                         value: false,
@@ -51,208 +43,248 @@
                     },
                     //MODEL
                     userInfo: { value: null }
-                },
-                created: function () {
-                    this.registerHandlers();
-                },
-                attached: function () {
-                    this.initialize();
-                },
-                initialize: function () {
-                    if (this.local) {
-                        var userInfoASJSON = sessionStorage.getItem(this.getStoragePath());
-                        if (userInfoASJSON) {
-                            this.userInfo = this.$.userInfo;
-                            this.userInfo.loadFromJSON(JSON.parse(userInfoASJSON));
-                            //this.fire('login-success', { userInfo: this.userInfo });
-                        }
-                    }
-                },
-                getStoragePath: function () {
-                    var path=document.location.pathname;
-                    return path+'-userInfo'
-                },
-                login: function (formValues) {
-                    this.checkParams(formValues);
-                    this.set('$.login.body',formValues);
-                    this.$.login.generateRequest();
-                },
-                checkParams: function (formValues, reset) {
-                    if (!formValues) {
-                        throw this.MISSING_PARAMETER;
-                    } else {
-                        if (!formValues.j_frf_mode) {
-                            throw this.MISSING_PARAMETER_MODE;
-                        }
-                        if (!formValues.j_frf_domain) {
-                            throw this.MISSING_PARAMETER_DOMAIN;
-                        }
-                        if (!formValues.j_username) {
-                            throw this.MISSING_PARAMETER_USERNAME;
-                        }
-                        if (!formValues.j_password) {
-                            throw this.MISSING_PARAMETER_PASSWORD;
-                        }
-                        if (reset && !formValues.j_frf_newPassword) {
-                            throw this.MISSING_PARAMETER_NEW_PASSWORD;
-                        }
-                    }
-                },
-                loginComplete: function (event) {
-                    var login = this.$.login;
-                    //correct response mean also status!=0
-                    if (login.lastResponse != null && event.detail.xhr.status != 0) {
-                        this.loginSuccess(login.lastResponse, event);
-                    } else {
-                        this.loginFailure(login.lastError, event);
-                    }
-                },
-                loginSuccess: function (response, event) {
-                    this.handleLogin(response);
-                    this.fire('login-success', { userInfo: this.userInfo });
-                },
-                loginFailure: function (error, event) {
-                    var errorResponse = { errorMessage: 'erreur de connexion'};
-                    var response;
-                    if (error && error.response) {
-                        response = error.response;
-                    }
-                    else {
-                        if (event.request && event.request.xhr && event.request.xhr.response) {
-                            response = event. request.xhr.response;
-                        }
-                    }
+                }
+            }
 
-                    if (response) {
-                        switch (typeof response) {
-                            case 'string':
-                                errorResponse.errorMessage = response;
-                                break;
-                            case 'object':
-                                errorResponse = response;
-                                break;
-                            default:
-                                errorResponse.errorMessage = 'erreur de connexion';
-                                break;
-                        }
-                    }
 
-                    if(event.detail &&  event.detail.xhr){
-                        errorResponse.isExpire = this.isPasswordExpire(event.detail.xhr.responseText);
-                    }
-                    this.fire('login-error', errorResponse);
-                },
-                isPasswordExpire: function (responseText) {
-                    return this.isExpireResponse(this.responseToJson(responseText));
-                },
-                /**
-                 * Transform the responseText in an object with errorCode and errorMessage properties
-                 * Response is :
-                 * javax.naming.AuthenticationException: [LDAP: error code 49 - INVALID_CREDENTIALS: Bind failed: NO_SUCH_OBJECT - Code utilisateur inconnu ou expiré.]
-                 *
-                 **/
-                responseToJson: function (responseText) {
-                    var re = /.*\[.*error code (\d*) - (.*)]/;
-                    var results = re.exec(responseText);
-                    if (results && results.length > 1) {
-                        return {
-                            errorCode: results[1],
-                            errorMessage: results[2]
-                        };
-                    }
-                    return null;
-                },
-                /**
-                 * For expire :
-                 * errorCode should be 49
-                 * message should contain 'NO_SUCH_OBJECT'
-                 *
-                 **/
-                isExpireResponse: function (response) {
-                    var isExpire = false;
-                    if (response && response.errorCode && response.errorMessage) {
-                        //Check error code
-                        var code = parseInt(response.errorCode);
-                        if (isNaN(code) || code !== 49) {
-                            return false;
-                        }
-                        //Check error message
-                        var message = response.errorMessage;
-                        if (message.indexOf) {
-                            return response.errorMessage.indexOf('NO_SUCH_OBJECT') > -1;
-                        }
-                    }
-                    return isExpire;
-                },
-                logout: function () {
-                    this.$.logout.generateRequest();
-                },
-                logoutComplete: function (event) {
-                    var logout = this.$.logout;
-                    if (event.detail.xhr.status != 0) {
-                        this.logoutSuccess();
-                    } else {
-                        this.logoutFailure(logout.lastError,event);
-                    }
-                },
-                logoutSuccess: function () {
-                    this.clearContext();
-                    this.fire('logout-success');
-                },
-                logoutFailure: function (error,event) {
-                    var detail={
-                        status: '',
-                        statusText: ''
-                    };
-                    if(event && event.request && event.request.xhr){
-                        detail={
-                            status: event.request.xhr.status,
-                            statusText: event.request.xhr.statusText
-                        }
-                    }
-                    this.fire('logout-error', detail);
-                },
-                resetPassword: function (formValues) {
-                    this.checkParams(formValues, true);
-                    this.set('$.login.body', formValues);
-                    this.$.login.generateRequest();
-                },
-                /*
-                 * login was successful, set UserInfo
-                 */
-                handleLogin: function (response) {
-                    if (response) {
-                        // instantiate userInfo
+            constructor() {
+                super();
+                //EXCEPTIONS
+                this.MISSING_PARAMETER= "missing login parameters";
+                this.MISSING_PARAMETER_MODE= "missing mode parameter";
+                this.MISSING_PARAMETER_DOMAIN= "missing domain parameter";
+                this.MISSING_PARAMETER_USERNAME= "missing username parameter";
+                this.MISSING_PARAMETER_PASSWORD= "missing password parameter";
+                this.MISSING_PARAMETER_NEW_PASSWORD= "missing new password parameter";
+                this.MALFORMED_JSON= "Malformed JSON response";
+                this.CONFIRM_PASSWORD= "confirm your password";
+                this.NO_USER_AUTHENTIFIED= "no authentified user";
+                //DEFAULT URLS
+                this.DEFAULT_LOGIN_URL= "j_spring_security_check";
+                this.DEFAULT_LOGOUT_URL= "j_spring_security_logout";
+                this.registerHandlers();
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                this.initialize();
+            }
+
+            initialize() {
+                if (this.local) {
+                    var userInfoASJSON = sessionStorage.getItem(this.getStoragePath());
+                    if (userInfoASJSON) {
                         this.userInfo = this.$.userInfo;
-                        this.userInfo.loadFromJSON(response);
-                        // store in sessionStorage
-                        if (this.local) {
-                            var userInfoAsJSON = JSON.stringify(this.userInfo);
-                            sessionStorage.setItem(this.getStoragePath(), userInfoAsJSON);
-                        }
-                    }
-                },
-                /*
-                 * clear contexte upon logout
-                 */
-                clearContext: function () {
-                    this.userInfo = null;
-                    sessionStorage.removeItem(this.getStoragePath());
-                },
-                registerHandlers: function () {
-                    if (window.$ && window.$.ajaxSetup) {
-                        $.ajaxSetup({
-                            statusCode: {
-                                401: function () {
-                                    this.fire('require-authentification');
-                                }.bind(this),
-                                403: function () {
-                                    this.fire('access-denied');
-                                }.bind(this)
-                            }
-                        });
+                        this.userInfo.loadFromJSON(JSON.parse(userInfoASJSON));
+                        //this.fire('login-success', { userInfo: this.userInfo });
                     }
                 }
-            });
+            }
+
+            getStoragePath() {
+                var path = document.location.pathname;
+                return path + '-userInfo'
+            }
+
+            login(formValues) {
+                this.checkParams(formValues);
+                this.set('$.login.body', formValues);
+                this.$.login.generateRequest();
+            }
+
+            checkParams(formValues, reset) {
+                if (!formValues) {
+                    throw this.MISSING_PARAMETER;
+                } else {
+                    if (!formValues.j_frf_mode) {
+                        throw this.MISSING_PARAMETER_MODE;
+                    }
+                    if (!formValues.j_frf_domain) {
+                        throw this.MISSING_PARAMETER_DOMAIN;
+                    }
+                    if (!formValues.j_username) {
+                        throw this.MISSING_PARAMETER_USERNAME;
+                    }
+                    if (!formValues.j_password) {
+                        throw this.MISSING_PARAMETER_PASSWORD;
+                    }
+                    if (reset && !formValues.j_frf_newPassword) {
+                        throw this.MISSING_PARAMETER_NEW_PASSWORD;
+                    }
+                }
+            }
+
+            loginComplete(event) {
+                var login = this.$.login;
+                //correct response mean also status!=0
+                if (login.lastResponse != null && event.detail.xhr.status != 0) {
+                    this.loginSuccess(login.lastResponse, event);
+                } else {
+                    this.loginFailure(login.lastError, event);
+                }
+            }
+
+            loginSuccess(response, event) {
+                this.handleLogin(response);
+                this.dispatchEvent(new CustomEvent('login-success', { detail: { userInfo: this.userInfo } }));
+            }
+
+            loginFailure(error, event) {
+                var errorResponse = { errorMessage: 'erreur de connexion' };
+                var response;
+                if (error && error.response) {
+                    response = error.response;
+                }
+                else {
+                    if (event.request && event.request.xhr && event.request.xhr.response) {
+                        response = event.request.xhr.response;
+                    }
+                }
+
+                if (response) {
+                    switch (typeof response) {
+                        case 'string':
+                            errorResponse.errorMessage = response;
+                            break;
+                        case 'object':
+                            errorResponse = response;
+                            break;
+                        default:
+                            errorResponse.errorMessage = 'erreur de connexion';
+                            break;
+                    }
+                }
+
+                if (event.detail && event.detail.xhr) {
+                    errorResponse.isExpire = this.isPasswordExpire(event.detail.xhr.responseText);
+                }
+                this.dispatchEvent(new CustomEvent('login-error', { detail: errorResponse }));
+            }
+
+            isPasswordExpire(responseText) {
+                return this.isExpireResponse(this.responseToJson(responseText));
+            }
+
+            /**
+             * Transform the responseText in an object with errorCode and errorMessage properties
+             * Response is :
+             * javax.naming.AuthenticationException: [LDAP: error code 49 - INVALID_CREDENTIALS: Bind failed: NO_SUCH_OBJECT - Code utilisateur inconnu ou expiré.]
+             *
+             **/
+            responseToJson(responseText) {
+                var re = /.*\[.*error code (\d*) - (.*)]/;
+                var results = re.exec(responseText);
+                if (results && results.length > 1) {
+                    return {
+                        errorCode: results[1],
+                        errorMessage: results[2]
+                    };
+                }
+                return null;
+            }
+
+            /**
+             * For expire :
+             * errorCode should be 49
+             * message should contain 'NO_SUCH_OBJECT'
+             *
+             **/
+            isExpireResponse(response) {
+                var isExpire = false;
+                if (response && response.errorCode && response.errorMessage) {
+                    //Check error code
+                    var code = parseInt(response.errorCode);
+                    if (isNaN(code) || code !== 49) {
+                        return false;
+                    }
+                    //Check error message
+                    var message = response.errorMessage;
+                    if (message.indexOf) {
+                        return response.errorMessage.indexOf('NO_SUCH_OBJECT') > -1;
+                    }
+                }
+                return isExpire;
+            }
+
+            logout() {
+                this.$.logout.generateRequest();
+            }
+
+            logoutComplete(event) {
+                var logout = this.$.logout;
+                if (event.detail.xhr.status != 0) {
+                    this.logoutSuccess();
+                } else {
+                    this.logoutFailure(logout.lastError, event);
+                }
+            }
+
+            logoutSuccess() {
+                this.clearContext();
+                this.dispatchEvent(new CustomEvent('login-success'));
+            }
+
+            logoutFailure(error, event) {
+                var detail = {
+                    status: '',
+                    statusText: ''
+                };
+                if (event && event.request && event.request.xhr) {
+                    detail = {
+                        status: event.request.xhr.status,
+                        statusText: event.request.xhr.statusText
+                    }
+                }
+                this.dispatchEvent(new CustomEvent('login-error', { detail: detail }));
+            }
+
+            resetPassword(formValues) {
+                this.checkParams(formValues, true);
+                this.set('$.login.body', formValues);
+                this.$.login.generateRequest();
+            }
+
+            /*
+             * login was successful, set UserInfo
+             */
+            handleLogin(response) {
+                if (response) {
+                    // instantiate userInfo
+                    this.userInfo = this.$.userInfo;
+                    this.userInfo.loadFromJSON(response);
+                    // store in sessionStorage
+                    if (this.local) {
+                        var userInfoAsJSON = JSON.stringify(this.userInfo);
+                        sessionStorage.setItem(this.getStoragePath(), userInfoAsJSON);
+                    }
+                }
+            }
+
+            /*
+             * clear contexte upon logout
+             */
+            clearContext() {
+                this.userInfo = null;
+                sessionStorage.removeItem(this.getStoragePath());
+            }
+
+            registerHandlers() {
+                if (window.$ && window.$.ajaxSetup) {
+                    $.ajaxSetup({
+                        statusCode: {
+                            401() {
+                                this.dispatchEvent(new CustomEvent('require-authentification'));
+                            },
+                            403() {
+                                this.dispatchEvent(new CustomEvent('access-denied'));
+                            }
+                        }
+                    });
+                }
+            }
+        };
+
+        // Register custom element definition using standard platform API
+        customElements.define(FrfLoginService.is, FrfLoginService);
     </script>
 </dom-module>

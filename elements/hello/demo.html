@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>Hello Demo</title>
+  <script src="./bower_components/webcomponentsjs/webcomponents-lite.js"></script>  
+  <link rel="import" href="hello.html">
+  <style>
+    .cont {
+      background-color: blue;
+    }    
+  </style>
+</head>
+
+<body>
+  <div class="cont">
+      <user-link  name="Demo hello"></user-link>
+  </div>
+
+  <script type="text/javascript">
+    
+      var elmt = document.querySelector('user-link');
+
+      elmt.addEventListener('logout', function (e) {
+        console.log('logout from user-link');
+      });      
+    
+
+  </script>
+</body>
+
+</html>

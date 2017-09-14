@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <title>frf-login Demo</title>
+  <link rel="import" href="./bower_components/shadycss/apply-shim.html">  
+  <script src="./bower_components/webcomponentsjs/webcomponents-lite.js"></script>  
+  <link rel="import" href="frf-login.html">
+  
+
+  <style>
+
+    .cont {
+      margin: 15px;
+    }
+
+    frf-login.logged {
+      position:absolute;
+      right: 10px;
+      top:10px;
+    }
+  </style>
+</head>
+<body unresolved>
+<div class="cont">      
+  <frf-login domain="true" reset="true" login-url="mocks/login.json" logout-url="mocks/logout.json" on-login="event()">
+    <img id="logo" slot="logo" src="img/logo-sg.png">
+    <span id="title">franfinance</span>
+  </frf-login>
+</div>
+
+<script type="text/javascript">
+
+
+  window.addEventListener('polymer-ready', function (e) {
+    var app = document.querySelector('frf-login');
+
+    app.addEventListener('login-success', function (e) {
+      console.log('login-success');
+    });
+    app.addEventListener('login-error', function (e) {
+      console.log('login-error');
+      console.log( e.detail.status, e.detail.statusText);
+    });
+    app.addEventListener('logout-success', function (e) {
+      console.log('logout-success');
+    });
+    app.addEventListener('logout-error', function (e) {
+      console.log('logout-error');
+    });
+    app.addEventListener('require-authentification', function (e) {
+      console.log('require-authentification');
+    });
+
+    app.addEventListener('access-denied', function (e) {
+      console.log('access-denied');
+    });
+
+  });
+</script>
+</body>
+</html>

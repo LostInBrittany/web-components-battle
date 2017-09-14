@@ -1,12 +1,12 @@
 {
   "name": "promise-polyfill",
-  "version": "2.1.0",
+  "version": "2.0.1",
   "homepage": "https://github.com/taylorhakes/promise-polyfill",
   "authors": [
     "Taylor Hakes"
   ],
   "description": "Lightweight promise polyfill for the browser and node. A+ Compliant.",
-  "main": "promise.js",
+  "main": "Promise.js",
   "moduleType": [
     "globals",
     "node"

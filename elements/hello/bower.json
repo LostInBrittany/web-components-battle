@@ -1,0 +1,8 @@
+{
+  "name": "frf-login",
+  "dependencies": {    
+  },  
+  "devDependencies": {    
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^1.0.0"
+  }
+}

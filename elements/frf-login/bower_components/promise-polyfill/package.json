@@ -1,11 +1,10 @@
 {
   "name": "promise-polyfill",
-  "version": "6.0.2",
+  "version": "2.0.1",
   "description": "Lightweight promise polyfill. A+ compliant",
-  "main": "promise.js",
+  "main": "Promise.js",
   "scripts": {
-    "test": "eslint promise.js && mocha && karma start --single-run",
-    "build": "uglifyjs --compress --support-ie8 --mangle -o promise.min.js -- promise.js "
+    "test": "./node_modules/.bin/promises-aplus-tests tests/adapter.js; ./node_modules/.bin/promises-es6-tests tests/adapter.js"
   },
   "repository": {
     "type": "git",
@@ -18,15 +17,13 @@
   },
   "homepage": "https://github.com/taylorhakes/promise-polyfill",
   "devDependencies": {
-    "eslint": "^2.4.0",
-    "karma": "^0.13.19",
-    "karma-browserify": "^4.4.2",
-    "karma-chrome-launcher": "^0.2.2",
-    "karma-mocha": "^0.2.1",
-    "mocha": "^2.3.4",
+    "grunt": "^0.4.5",
+    "grunt-bytesize": "^0.1.1",
+    "grunt-closurecompiler": "^0.9.9",
+    "grunt-contrib-uglify": "^0.4.0",
+    "mocha": "^2.2.1",
     "promises-aplus-tests": "*",
-    "sinon": "^1.17.2",
-    "uglify-js": "^2.6.2"
+    "promises-es6-tests": "^0.5.0"
   },
   "keywords": [
     "promise",
