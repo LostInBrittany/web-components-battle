@@ -7,6 +7,7 @@
 # dependencies
 /node_modules
 /bower_components
+elements/frf-login/bower_components
 
 # IDEs and editors
 /.idea
