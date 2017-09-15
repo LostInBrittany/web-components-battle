@@ -68,7 +68,7 @@
         return (this.latitude && this.longitude && this.people && this.people.length );
       },
       _equals: function(personA, personB) {
-        return personA.email == personB.email;
+        return personA && personB && personA.email == personB.email;
       },
       _onPeopleChange: function() {
         console.debug("[google-map-wrapper] _onPeopleChange", this.people);

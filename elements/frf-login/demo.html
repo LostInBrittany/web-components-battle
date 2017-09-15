@@ -32,11 +32,14 @@
 <script type="text/javascript">
 
 
-  window.addEventListener('polymer-ready', function (e) {
+  window.onload = function (e) {
     var app = document.querySelector('frf-login');
 
     app.addEventListener('login-success', function (e) {
       console.log('login-success');
+    });
+    app.addEventListener('checked - changed', function (e) {
+      console.log('checked - changed');
     });
     app.addEventListener('login-error', function (e) {
       console.log('login-error');
@@ -56,7 +59,7 @@
       console.log('access-denied');
     });
 
-  });
+  };
 </script>
 </body>
 </html>

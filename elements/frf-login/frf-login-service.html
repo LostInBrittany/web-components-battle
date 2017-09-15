@@ -126,7 +126,9 @@
 
             loginSuccess(response, event) {
                 this.handleLogin(response);
-                this.dispatchEvent(new CustomEvent('login-success', { detail: { userInfo: this.userInfo } }));
+                this.dispatchEvent(new CustomEvent('login-success', { 
+                    detail: { userInfo: this.userInfo }, composed: true
+                }));
             }
 
             loginFailure(error, event) {
@@ -158,7 +160,8 @@
                 if (event.detail && event.detail.xhr) {
                     errorResponse.isExpire = this.isPasswordExpire(event.detail.xhr.responseText);
                 }
-                this.dispatchEvent(new CustomEvent('login-error', { detail: errorResponse }));
+                this.dispatchEvent(new CustomEvent('login-error', {
+                     detail: errorResponse, composed: true }));
             }
 
             isPasswordExpire(responseText) {
@@ -221,7 +224,8 @@
 
             logoutSuccess() {
                 this.clearContext();
-                this.dispatchEvent(new CustomEvent('login-success'));
+                this.dispatchEvent(new CustomEvent('login-success'),{
+                    composed: true });
             }
 
             logoutFailure(error, event) {
@@ -235,7 +239,8 @@
                         statusText: event.request.xhr.statusText
                     }
                 }
-                this.dispatchEvent(new CustomEvent('login-error', { detail: detail }));
+                this.dispatchEvent(new CustomEvent('login-error', { 
+                    detail: detail, composed: true }));
             }
 
             resetPassword(formValues) {
@@ -273,10 +278,10 @@
                     $.ajaxSetup({
                         statusCode: {
                             401() {
-                                this.dispatchEvent(new CustomEvent('require-authentification'));
+                                this.dispatchEvent(new CustomEvent('require-authentification', {composed: true }));
                             },
                             403() {
-                                this.dispatchEvent(new CustomEvent('access-denied'));
+                                this.dispatchEvent(new CustomEvent('access-denied', {composed: true }));
                             }
                         }
                     });
