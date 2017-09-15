@@ -112,7 +112,7 @@ angular.module('angular1App')
                   cb:ctrl.getFunctionName(strCallback),
                   name:strCallback
               };
-
+              
               element.on(snakeEvent, function (event) {
                 //Save polymer event on scope
                 scope.$pEvent = event;
