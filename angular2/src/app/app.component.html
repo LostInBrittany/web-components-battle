@@ -1,6 +1,8 @@
 <md-toolbar color="accent">
-  <md-icon [routerLink]="['/login']" svgSrc="assets/images/md-home.svg"></md-icon>
-  <span>People</span>
+  <a [routerLink]="['login']">
+    <img src="assets/images/md-home.svg" aria-label="sfeir" alt="Sfeir">
+  </a>  
+  <span class="title">People</span>
   <span class="flex"></span>
   <user-link *ngIf="user" [attr.name]="user.firstname" (logout)="logout()"></user-link>
   <span>    

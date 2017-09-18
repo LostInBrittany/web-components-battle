@@ -1,19 +1,21 @@
 import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { MaterialModule } from '@angular/material';
+import { HttpModule } from '@angular/http';
+import { RouterModule } from '@angular/router';
 
 import { CardComponent } from './card/card.component';
 import { LoginService } from './services/login.service';
 import { PeopleService} from './services/people.service';
 
-import { MdModule } from '../core/';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+
 
 
 @NgModule({
   imports: [
-    MdModule,
-    CommonModule,
-    RouterModule
+    BrowserModule,
+    RouterModule,
+    MaterialModule
   ],
   declarations: [
     CardComponent
@@ -23,6 +25,10 @@ import { RouterModule } from '@angular/router';
     PeopleService
   ],
   exports: [
+    BrowserModule,
+    HttpModule,
+    RouterModule,
+    MaterialModule,
     CardComponent
   ]
 })

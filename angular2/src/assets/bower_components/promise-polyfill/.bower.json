@@ -1,6 +1,6 @@
 {
   "name": "promise-polyfill",
-  "version": "2.1.0",
+  "version": "2.0.1",
   "homepage": "https://github.com/taylorhakes/promise-polyfill",
   "authors": [
     "Taylor Hakes"
@@ -25,13 +25,13 @@
     "test",
     "tests"
   ],
-  "_release": "2.1.0",
+  "_release": "2.0.1",
   "_resolution": {
     "type": "version",
-    "tag": "2.1.0",
-    "commit": "7ee8e28671e2e7ff0304ea37c3d1fb1288645362"
+    "tag": "v2.0.1",
+    "commit": "e25cc06fc764efafa86003eef4d61d658169a6a9"
   },
-  "_source": "https://github.com/taylorhakes/promise-polyfill.git",
-  "_target": "~2.1.0",
-  "_originalSource": "promise-polyfill"
+  "_source": "https://github.com/polymerlabs/promise-polyfill.git",
+  "_target": "^2.0.0",
+  "_originalSource": "polymerlabs/promise-polyfill"
 }

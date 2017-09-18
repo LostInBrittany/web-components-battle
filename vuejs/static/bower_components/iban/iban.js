@@ -120,16 +120,6 @@
     }
 
     /**
-     *
-     * @param iban
-     * @returns {string}
-     */
-    function electronicFormat(iban){
-        return iban.replace(NON_ALPHANUM, '').toUpperCase();
-    }
-
-
-    /**
      * Create a new Specification for a valid IBAN number.
      *
      * @param countryCode the code of the country
@@ -340,7 +330,7 @@
         if (!isString(iban)){
             return false;
         }
-        iban = electronicFormat(iban);
+        iban = this.electronicFormat(iban);
         var countryStructure = countries[iban.slice(0,2)];
         return !!countryStructure && countryStructure.isValid(iban);
     };
@@ -356,7 +346,7 @@
         if (typeof separator == 'undefined'){
             separator = ' ';
         }
-        iban = electronicFormat(iban);
+        iban = this.electronicFormat(iban);
         var countryStructure = countries[iban.slice(0,2)];
         if (!countryStructure) {
             throw new Error('No country with code ' + iban.slice(0,2));
@@ -378,7 +368,7 @@
         if (!countryStructure) {
             throw new Error('No country with code ' + countryCode);
         }
-        return countryStructure.fromBBAN(electronicFormat(bban));
+        return countryStructure.fromBBAN(this.electronicFormat(bban));
     };
 
     /**
@@ -392,7 +382,7 @@
             return false;
         }
         var countryStructure = countries[countryCode];
-        return countryStructure && countryStructure.isValidBBAN(electronicFormat(bban));
+        return countryStructure && countryStructure.isValidBBAN(this.electronicFormat(bban));
     };
 
     /**
@@ -405,10 +395,18 @@
         if (typeof separator == 'undefined'){
             separator = ' ';
         }
-        return electronicFormat(iban).replace(EVERY_FOUR_CHARS, "$1" + separator);
+        return this.electronicFormat(iban).replace(EVERY_FOUR_CHARS, "$1" + separator);
     };
 
-    exports.electronicFormat = electronicFormat;
+    /**
+     *
+     * @param iban
+     * @returns {string}
+     */
+    exports.electronicFormat = function(iban){
+        return iban.replace(NON_ALPHANUM, '').toUpperCase();
+    };
+
     /**
      * An object containing all the known IBAN specifications.
      */

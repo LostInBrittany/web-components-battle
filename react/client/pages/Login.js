@@ -7,11 +7,12 @@ class Login extends Component {
 
     constructor() {
         super();
-        reactPolymer.registerEvent('login-success','login-success');        
+        reactPolymer.registerAttribute('slot')
+        reactPolymer.registerEvent('login-success','login-success');
     }
 
-    componentDidMount() {
-        
+    componentDidMount() {        
+        this.refs.frfLogin.addEventListener("login-success", this.onLogin.bind(this));
     }
 
 
@@ -21,13 +22,14 @@ class Login extends Component {
 
         return (
             <div className="login">
+                <link rel="import" href="static/elements/frf-login/elements.html"/>
                 <link rel="import" href="static/elements/frf-login/frf-login.html"/>
                 <div className="views">
                     <frf-login ref="frfLogin"                               
                                login-url={loginUrl}                                                              
                                login-success={(e)=>this.onLogin(e)}>                        
-                        <span id="title">Snowcamp 2017</span>
-                        <img id="logo" src="/static/images/snowcamp.png"/>
+                        <span id="title">Devfest 2017</span>
+                        <img slot="logo" id="logo" src="/static/images/gde.png"/>
                     </frf-login>
                 </div>
             </div>

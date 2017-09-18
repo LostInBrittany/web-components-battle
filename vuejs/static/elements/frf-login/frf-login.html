@@ -2,125 +2,128 @@
 <link rel="import" href="./frf-login-form.html">
 
 <dom-module id="frf-login">
-    <style>
-
-        :host {
-            display: block;
-        }
-
-        :host(.logged) {
-            background-color: white;
-        }
-
-        :host(.logged) ::content #title, :host(.logged) ::content #logo {
-            display: none;
-        }
-
-
-        #container {
-            height: auto;
-            max-width: 400px;
-            margin: 0 auto;
-            padding: 20px;
-            -webkit-transition: all .5s ease;
-            -moz-transition: all .5s ease;
-            transition: all .5s ease;
-            @apply(--layout);
-            @apply(--layout-vertical);
-        }
-
-        #content {
-            @apply(--layout);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-        }
-
-        #loginForm{
-            @apply(--layout);
-            @apply(--layout-vertical);
-        }
-
-        .action{
-            @apply(--layout);
-            @apply(--layout-horizontal);
-            @apply(--layout-center);
-            @apply(--layout-self-center);
-        }
-
-        .action span {
-            text-transform: uppercase;
-        }
-
-        /* FORM CONTAINER */
-        #container {
-            font-family: 'RobotoDraft', sans-serif;
-            background-color: white;
-            color: black;
-            /* apply a mixin */
-            @apply(--container-theme);
-        }
-
-
-        /* FORM LOGO*/
-        ::content #logo {
-            height: 64px;
-            width: 64px;
-            /* apply a mixin */
-            @apply(--logo-theme);
-        }
-
-        /* FORM TITLE*/
-        ::content #title {
-            color: black;
-            padding-left: 20px;
-            font-size: 24px;
-            text-transform: uppercase;
-            /* apply a mixin */
-            @apply(--title-theme);
-        }
-
-        /* Logout link*/
-        .logout {
-            padding: 10px;
-            text-decoration: underline;
-            cursor: pointer;
-        }
-
-        /* Error message */
-        .error {
-            color: red;
-            margin: 0 auto;
-        }
-
-        :host {
-            --container-theme: {
-                border-radius: 15px;
-            };
-
-            --logo-theme: {
-                border: 2px solid #880000;
-                border-radius: 50%;
-            };
-
-            --title-theme: {
-                color: #cc0000;
-            };
-        }
-
-    </style>
     <template>
-        <frf-login-service id="loginService" local="" login-url="[[loginUrl]]" logout-url="[[logoutUrl]]" on-login-success="onlogin" on-login-error="onloginError" on-logout-success="onlogout" on-logout-error="onlogoutError" on-reset-success="onrest" on-reset-error="onresetError">
+        <style>
+             :host {
+                --container-theme: {
+                    border-radius: 15px;
+                }
+                ;
+
+
+                --logo-theme: {
+                    border: 2px solid #880000;
+                    border-radius: 50%;
+                }
+                ;
+
+                --title-theme: {
+                    color: #cc0000;
+                }
+                ;
+            }
+
+             :host {
+                display: block;
+            }
+
+             :host(.logged) {
+                background-color: white;
+            }
+
+             :host(.logged) ::slotted(#title),
+             :host(.logged) ::slotted(#logo) {
+                display: none;
+            }
+
+
+            #container {
+                height: auto;
+                max-width: 400px;
+                margin: 0 auto;
+                padding: 20px;
+                -webkit-transition: all .5s ease;
+                -moz-transition: all .5s ease;
+                transition: all .5s ease;
+                @apply --layout;
+                @apply --layout-vertical;
+            }
+
+            #content {
+                @apply --layout;
+                @apply --layout-horizontal;
+                @apply --layout-center;
+            }
+
+            #loginForm {
+                @apply --layout;
+                @apply --layout-vertical;
+            }
+
+            .action {
+                @apply --layout;
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-self-center;
+            }
+
+            .action span {
+                text-transform: uppercase;
+            }
+            /* FORM CONTAINER */
+
+            #container {
+                font-family: 'RobotoDraft', sans-serif;
+                background-color: white;
+                color: black;
+                @apply --container-theme;
+            }
+            /* FORM LOGO*/
+
+             ::slotted(#logo) {
+                height: 64px;
+                width: 64px;
+                @apply --logo-theme;
+            }
+            /* FORM TITLE*/
+
+             ::slotted(#title) {
+                color: black;
+                padding-left: 20px;
+                font-size: 24px;
+                text-transform: uppercase;
+                @apply --title-theme;
+            }
+            /* Logout link*/
+
+            .logout {
+                padding: 10px;
+                text-decoration: underline;
+                cursor: pointer;
+            }
+            /* Error message */
+
+            .error {
+                color: red;
+                margin: 0 auto;
+            }
+        </style>
+
+        <frf-login-service id="loginService" local="" login-url="[[loginUrl]]" logout-url="[[logoutUrl]]" on-login-success="onlogin"
+            on-login-error="onloginError" on-logout-success="onlogout" on-logout-error="onlogoutError" on-reset-success="onrest"
+            on-reset-error="onresetError">
         </frf-login-service>
 
 
         <paper-material id="container">
             <div id="content">
-                <content select="#logo"></content>
-                <content></content>
+                <slot name="logo"></slot>
+                <slot></slot>
             </div>
             <!-- LOGIN VIEW -->
             <template is="dom-if" if="{{!islogged}}">
-                <frf-login-form id="loginForm" show-domain-label="[[showDomainLabel]]" show-domain="[[domain]]" reset="[[reset]]" on-submit="submitForm" on-reset="resetPassword">
+                <frf-login-form id="loginForm" show-domain-label="[[showDomainLabel]]" show-domain="[[domain]]" reset="[[reset]]" on-submit="submitForm"
+                    on-reset="resetPassword">
                 </frf-login-form>
             </template>
             <!-- LOGGED VIEW -->
@@ -137,9 +140,12 @@
         </paper-material>
     </template>
     <script>
-        Polymer({
-                is: 'frf-login',
-                properties: {
+        class FrfLogin extends Polymer.Element {
+
+            static get is() { return 'frf-login'; }
+
+            static get properties() {
+                return {
                     captcha: {
                         type: Boolean,
                         value: false
@@ -173,87 +179,117 @@
                         type: Boolean,
                         value: false
                     }
-                },
-                ready: function () {
-                    Polymer.dom(this).classList.add('ready');
-                },
-                onlogin: function (event) {
-                    this.setContext(event.detail.userInfo);
-                },
-                onlogout: function () {
-                    this.clearContext();
-                },
-                onreset: function () {
-                    this.setContext(event.detail.userInfo);
-                },
-                onloginError: function (e, error) {
-                    this.message = 'Erreur de connexion: ' + error.errorMessage;
-                },
-                onlogoutError: function () {
-                    this.message = 'Erreur de d\uFFFDconnexion';
-                },
-                logout: function () {
-                    this.$.loginService.logout();
-                },
-                submitForm: function () {
-                    //get Form values
-                    var loginForm = this.$$("frf-login-form");
-                    var params = loginForm.getParams();
-                    //login
-                    this.$.loginService.login(params);
-                },
-                resetPassword: function () {
-                    //get Form values
-                    var loginForm = this.$$("frf-login-form");
-                    var params = loginForm.getParams();
-                    //reset and login
-                    this.$.loginService.resetPassword(params);
-                },
-                /*
-                 * clear contexte upon logout
-                 */
-                setContext: function (user) {
-                    this.message = '';
-                    this.userInfo = user;
-                    this.userName = this.userInfo.get('name');
-                    this.islogged = true;
-                    Polymer.dom(this).classList.add('logged');
-                },
-                /*
-                 * clear contexte upon logout
-                 */
-                clearContext: function () {
-                    this.islogged = false;
-                    this.userInfo = null;
-                    /*var loginForm = this.$$("frf-login-form");
-                     loginForm.username="";
-                     loginForm.password="";*/
-                    Polymer.dom(this).classList.remove('logged');
-                    this.$.loginService.clearContext();
-                },
-                /*
-                 * has current user successfully authenticated ?
-                 */
-                isUserAuthenticated: function () {
-                    return !!(this.userInfo && this.userInfo instanceof UserInfo);
-                },
-                /*
-                 * Return currentUser
-                 */
-                getCurrentUser: function () {
-                    if (this.userInfo && this.userInfo instanceof UserInfo) {
-                        return this.userInfo;
-                    } else {
-                        throw this.NO_USER_AUTHENTIFIED;
-                    }
-                },
-                /*
-                 * Check if connected User is endorsed with role
-                 */
-                isUserInRole: function (role) {
-                    var userInfo = this.getCurrentUser();
-                    return userInfo.isUserInRole(role);
                 }
-            });
+            }
+
+
+            constructor() {
+                super();
+                this.islogged = false;
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                // Polymer.dom(this).classList.add('ready');
+            }
+
+            ready() {
+                super.ready();
+                Polymer.dom(this).classList.add('ready');
+            }
+                
+            onlogin(event) {
+                this.setContext(event.detail.userInfo);
+            }
+
+            onlogout() {
+                this.clearContext();
+            }
+
+            onreset() {
+                this.setContext(event.detail.userInfo);
+            }
+
+            onloginError(e, error) {
+                this.message = 'Erreur de connexion: ' + error.errorMessage;
+            }
+
+            onlogoutError() {
+                this.message = 'Erreur de d\uFFFDconnexion';
+            }
+
+            logout() {
+                this.$.loginService.logout();
+            }
+
+            submitForm() {
+                //get Form values
+                var loginForm = this.shadowRoot.querySelector("frf-login-form")
+                var params = loginForm.getParams();
+                //login
+                this.$.loginService.login(params);
+            }
+
+            resetPassword() {
+                //get Form values
+                var loginForm = this.shadowRoot.querySelector("frf-login-form")
+                var params = loginForm.getParams();
+                //reset and login
+                this.$.loginService.resetPassword(params);
+            }
+
+            /*
+             * clear contexte upon logout
+             */
+            setContext(user) {
+                this.message = '';
+                this.userInfo = user;
+                this.userName = this.userInfo.get('name');
+                this.islogged = true;
+                Polymer.dom(this).classList.add('logged');
+            }
+
+            /*
+             * clear contexte upon logout
+             */
+            clearContext() {
+                this.islogged = false;
+                this.userInfo = null;
+                /*var loginForm = this.shadowRoot.querySelector("frf-login-form")
+                 loginForm.username="";
+                 loginForm.password="";*/
+                Polymer.dom(this).classList.remove('logged');
+                this.$.loginService.clearContext();
+            }
+
+            /*
+             * has current user successfully authenticated ?
+             */
+            isUserAuthenticated() {
+                return !!(this.userInfo && this.userInfo instanceof UserInfo);
+            }
+
+            /*
+             * Return currentUser
+             */
+            getCurrentUser() {
+                if (this.userInfo && this.userInfo instanceof UserInfo) {
+                    return this.userInfo;
+                } else {
+                    throw this.NO_USER_AUTHENTIFIED;
+                }
+            }
+
+            /*
+             * Check if connected User is endorsed with role
+             */
+            isUserInRole(role) {
+                var userInfo = this.getCurrentUser();
+                return userInfo.isUserInRole(role);
+            }
+        }
+
+        // Register custom element definition using standard platform API
+        customElements.define(FrfLogin.is, FrfLogin);
     </script>
 </dom-module>

@@ -1,46 +1,34 @@
 <md-card class="md-whiteframe-2dp">
-   <md-card-title-group>
+  <md-card-title-group>
       <img md-card-md-image src="{{ person.photo }}">
       <md-card-title>
-
-        <!--  show <a> if 'detailUrl' is set -->
-        <a  [hidden]="!detailUrl" [routerLink]="[ detailUrl , person.id]">
-          <span>{{ person.firstname }} {{ person.lastname }}</span>
-        </a>
-
-        <!--  show <span> if 'detailUrl' is NOT set -->
-        <span [hidden]="!!detailUrl">{{ person.firstname }} {{ person.lastname }}</span>
-
-			</md-card-title>
+          <a [routerLink]="['/person', person.id]">
+              <span>{{ person.firstname }} {{ person.lastname }}</span>
+          </a>
+      </md-card-title>
+      <md-card-subtitle>{{ person.entity}}</md-card-subtitle>
       <md-card-subtitle class="contact-info">
-        <md-icon svgSrc="assets/images/md-email.svg"></md-icon>
-        <a href="mailto:{{ person.firstname }} {{ person.lastname }}&lt;{{ person.email }}&gt;" title="Send an email to {{ person.firstname }} {{ person.lastname }}" class="truncate">{{ person.email }}</a>
+          <md-icon>email</md-icon>
+          <a href="mailto:{{ person.firstname }} {{ person.lastname }}&lt;{{ person.email }}&gt;" title="Send an email to {{ person.firstname }} {{ person.lastname }}" class="truncate">{{ person.email }}</a>
       </md-card-subtitle>
       <md-card-subtitle class="contact-info">
-        <md-icon svgSrc="assets/images/md-phone.svg"></md-icon>
-        <a href="tel:{{ person.phone }}" title="Call {{ person.firstname }}">{{ person.phone }}</a>
+          <md-icon>phone</md-icon>
+          <a href="tel:{{ person.phone }}" title="Call {{ person.firstname }}">{{ person.phone }}</a>
       </md-card-subtitle>
 
-   </md-card-title-group>
-	 <md-card-content>
-
-     <div class="flex__rows">
-       <div>
-         <p>
-           Manager&nbsp;:&nbsp;
-           <a *ngIf="person.managerId" [routerLink]="[ detailUrl , person.managerId || '']">{{ person.manager }}</a>
-           <span *ngIf="!person.managerId">N/A</span>
-         </p>
-         <p>
-           Location&nbsp;:&nbsp;<span>{{ person.entity }}</span>
-         </p>
-       </div>
-
-       <div class="action-buttons" >
-         <a md-button title="Locate" [routerLink]="[ mapUrl , person.id || '']">
-           <md-icon svgSrc="assets/images/md-map.svg"></md-icon>
-         </a>         
-       </div>
-     </div>     
-	 </md-card-content>
+</md-card-title-group>
+<md-card-content>
+  <div class="contact-info">
+    Manager&nbsp;:&nbsp;
+    <a href="#/people/1">{{ person.manager }}</a>
+  </div>
+  <div class="contact-info">
+    Location&nbsp;:&nbsp;<a href="http://www.sfeir.com/contact/">SFEIR</a>
+  </div>
+  <div class="buttons-info">
+    <a md-button title="Locate" href="#/people/map/{{person.id}}">
+      <md-icon>map</md-icon>
+    </a>    
+  </div>
+</md-card-content>
 </md-card>

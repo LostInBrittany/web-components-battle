@@ -1,50 +1,67 @@
-
-
-<dom-module id="frf-user" assetpath="model/">
+<dom-module id="frf-user">
     <template>
     </template>
     <script>
-        Polymer({
-                is: 'frf-user',
-                properties: {
+        class FrfUser extends Polymer.Element {
+
+            static get is() { return 'frf-user'; }
+
+            static get properties() {
+                return {
                     MISSING_ROLE: {
                         type: String,
                         value: 'should pass a role as parameter'
                     }
-                },
-                created: function () {
-                    this.datas = {};
-                },
-                loadFromJSON: function (json) {
-                    for (var i in json) {
-                        this.set('datas' + ('.' + i), json[i]);
-                    }
-                },
-                isUserInRole: function (role) {
-                    if (!role) {
-                        throw new Error(this.MISSING_ROLE);
-                    }
-                    var roles = this.getRoles();
-                    if (roles && roles.indexOf(role) !== -1) {
-                        return true;
-                    }
-                    return false;
-                },
-                getRoles: function () {
-                    return this.get('authorities');
-                },
-                get: function (attr) {
-                    if (this.datas) {
-                        if (!attr) {
-                            return this.datas;
-                        }
-                        return this.datas[attr] || null;
-                    }
-                    return null;
-                },
-                toJSON: function () {
-                    return this.datas;
                 }
-            });
+            }
+
+
+            constructor() {
+                super();
+                this.datas = {};
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+            }
+
+            loadFromJSON(json) {
+                for (var i in json) {
+                    this.set('datas' + ('.' + i), json[i]);
+                }
+            }
+
+            isUserInRole(role) {
+                if (!role) {
+                    throw new Error(this.MISSING_ROLE);
+                }
+                var roles = this.getRoles();
+                if (roles && roles.indexOf(role) !== -1) {
+                    return true;
+                }
+                return false;
+            }
+
+            getRoles() {
+                return this.get('authorities');
+            }
+
+            get(attr) {
+                if (this.datas) {
+                    if (!attr) {
+                        return this.datas;
+                    }
+                    return this.datas[attr] || null;
+                }
+                return null;
+            }
+
+            toJSON() {
+                return this.datas;
+            }
+        }
+
+        // Register custom element definition using standard platform API
+        customElements.define(FrfUser.is, FrfUser);
     </script>
 </dom-module>

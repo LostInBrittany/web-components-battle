@@ -1,26 +1,20 @@
-(function(root) {
-
-	// Use polyfill for setImmediate for performance gains
-	var asap = (typeof setImmediate === 'function' && setImmediate) ||
-		function(fn) { setTimeout(fn, 1); };
-
-	// Polyfill for Function.prototype.bind
-	function bind(fn, thisArg) {
-		return function() {
-			fn.apply(thisArg, arguments);
-		}
-	}
-
-	var isArray = Array.isArray || function(value) { return Object.prototype.toString.call(value) === "[object Array]" };
-
-	function Promise(fn) {
-		if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new');
-		if (typeof fn !== 'function') throw new TypeError('not a function');
+/**
+@license
+Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+*/
+function MakePromise (asap) {
+  function Promise(fn) {
+		if (typeof this !== 'object' || typeof fn !== 'function') throw new TypeError();
 		this._state = null;
 		this._value = null;
 		this._deferreds = []
 
-		doResolve(fn, bind(resolve, this), bind(reject, this))
+		doResolve(fn, resolve.bind(this), reject.bind(this));
 	}
 
 	function handle(deferred) {
@@ -31,7 +25,7 @@
 		}
 		asap(function() {
 			var cb = me._state ? deferred.onFulfilled : deferred.onRejected
-			if (cb === null) {
+			if (typeof cb !== 'function') {
 				(me._state ? deferred.resolve : deferred.reject)(me._value);
 				return;
 			}
@@ -49,11 +43,11 @@
 
 	function resolve(newValue) {
 		try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-			if (newValue === this) throw new TypeError('A promise cannot be resolved with itself.');
+			if (newValue === this) throw new TypeError();
 			if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
 				var then = newValue.then;
 				if (typeof then === 'function') {
-					doResolve(bind(then, newValue), bind(resolve, this), bind(reject, this));
+					doResolve(then.bind(newValue), resolve.bind(this), reject.bind(this));
 					return;
 				}
 			}
@@ -74,13 +68,6 @@
 			handle.call(this, this._deferreds[i]);
 		}
 		this._deferreds = null;
-	}
-
-	function Handler(onFulfilled, onRejected, resolve, reject){
-		this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null;
-		this.onRejected = typeof onRejected === 'function' ? onRejected : null;
-		this.resolve = resolve;
-		this.reject = reject;
 	}
 
 	/**
@@ -115,37 +102,13 @@
 	Promise.prototype.then = function(onFulfilled, onRejected) {
 		var me = this;
 		return new Promise(function(resolve, reject) {
-			handle.call(me, new Handler(onFulfilled, onRejected, resolve, reject));
+      handle.call(me, {
+        onFulfilled: onFulfilled,
+        onRejected: onRejected,
+        resolve: resolve,
+        reject: reject
+      });
 		})
-	};
-
-	Promise.all = function () {
-		var args = Array.prototype.slice.call(arguments.length === 1 && isArray(arguments[0]) ? arguments[0] : arguments);
-
-		return new Promise(function (resolve, reject) {
-			if (args.length === 0) return resolve([]);
-			var remaining = args.length;
-			function res(i, val) {
-				try {
-					if (val && (typeof val === 'object' || typeof val === 'function')) {
-						var then = val.then;
-						if (typeof then === 'function') {
-							then.call(val, function (val) { res(i, val) }, reject);
-							return;
-						}
-					}
-					args[i] = val;
-					if (--remaining === 0) {
-						resolve(args);
-					}
-				} catch (ex) {
-					reject(ex);
-				}
-			}
-			for (var i = 0; i < args.length; i++) {
-				res(i, args[i]);
-			}
-		});
 	};
 
 	Promise.resolve = function (value) {
@@ -164,27 +127,11 @@
 		});
 	};
 
-	Promise.race = function (values) {
-		return new Promise(function (resolve, reject) {
-			for(var i = 0, len = values.length; i < len; i++) {
-				values[i].then(resolve, reject);
-			}
-		});
-	};
+	
+  return Promise;
+}
 
-	/**
-	 * Set the immediate function to execute callbacks
-	 * @param fn {function} Function to execute
-	 * @private
-	 */
-	Promise._setImmediateFn = function _setImmediateFn(fn) {
-		asap = fn;
-	};
+if (typeof module !== 'undefined') {
+  module.exports = MakePromise;
+}
 
-	if (typeof module !== 'undefined' && module.exports) {
-		module.exports = Promise;
-	} else if (!root.Promise) {
-		root.Promise = Promise;
-	}
-
-})(this);

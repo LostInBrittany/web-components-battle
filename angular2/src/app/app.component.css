@@ -15,6 +15,10 @@
   background: #0168AB;
 }
 
+.title {
+  color: white;
+}
+
 .flex {
   flex: 1 1 auto;
 }

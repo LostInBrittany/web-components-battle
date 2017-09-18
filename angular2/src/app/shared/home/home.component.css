@@ -3,7 +3,7 @@
 }
 
 :host md-card-content {
-  background-image: url('assets/images/bg.png');
+  background-image: url('/assets/images/bg.png');
   background-position: center center;
   background-repeat: repeat-y;
   height: 360px;

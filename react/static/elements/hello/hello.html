@@ -1,71 +1,77 @@
 <template id="my-tpl">
-  <style>   
-    :host{
-      padding:0 20px;
-    } 
-    .name{
-      color:white;
+  <style>
+     :host {
+      padding: 0 20px;
+    }
+
+    .name {
+      color: white;
       text-transform: uppercase;
     }
-    .icon{
-      width:20px;
-      position:relative;
-      top:4px;
+
+    .icon {
+      width: 20px;
+      position: relative;
+      top: 4px;
     }
-    .name:hover{
-      text-decoration:underline;
+
+    .name:hover {
+      text-decoration: underline;
     }
-  </style>  
+  </style>
   <a id="logout">
     <span class="name"></span>
     <img class="icon" src="static/elements/hello/logout.svg"/>
-  </a>  
+  </a>
 </template>
 
 
 <script>
-  (function onload(){
-    console.log('component load');
+  console.log('component load');
+  let myDocument = document.currentScript.ownerDocument;
 
-    var myDocument=document.currentScript.ownerDocument;
-    var proto = Object.create(HTMLElement.prototype, {
-      createdCallback: {
-        value: function() {
-          var template = myDocument.querySelector('#my-tpl');
-          var clone = document.importNode(template.content, true);
-          var shadow = this.createShadowRoot();
-          shadow.appendChild(clone);
-          this.setEvents();
-        }
-      },
-      setEvents: {
-        value:function(){
-          var span = this.shadowRoot.querySelector('.name');
-          var btn = this.shadowRoot.querySelector('#logout');
+  class UserLink extends HTMLElement {
+    
+    static get observedAttributes() {
+      return ['name'];
+    }
+    
+    constructor() {
+      super();
+      let template = myDocument.querySelector('#my-tpl');
+      let clone = document.importNode(template.content, true);
+      let shadow = this.attachShadow({ mode: 'open' });
+      shadow.appendChild(clone);
+      this.setEvents();
+      let name = this.getAttribute('name') || 'Hello world!!!';
+      this.setName(name);
+    }
 
-          btn.onclick = function(){
-            console.log('custom event');
-            var event = new CustomEvent("logout");
-            this.dispatchEvent(event);
-          };
+    setEvents() {
+      let btn = this.shadowRoot.querySelector('#logout');
 
-        }
-      },
-      attributeChangedCallback: {
-        value:function(attr){
-            if(attr==="name"){
-              var span = this.shadowRoot.querySelector('.name');
-              if (span.textContent || span.textContent === "") {
-                span.textContent = this.getAttribute( attr );
-              }
-            }            
-        }
+      btn.addEventListener('click', () => {
+        let event = new CustomEvent("logout");
+        this.dispatchEvent(event);
+      });
+
+    }
+
+    attributeChangedCallback(attr) {
+      if (attr === "name") {
+        this.setName(this.getAttribute(attr));
       }
-    });
+    }
 
-    document.registerElement('user-link', {
-      prototype: proto
-    });
-  })()
+    setName(name) {
+      let span = this.shadowRoot.querySelector('.name');
+      if (span.textContent || span.textContent === "") {
+        span.textContent = name;
+      }
+    }
 
+  }
+
+  
+    window.customElements.define('user-link', UserLink);  
 </script>

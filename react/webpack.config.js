@@ -7,7 +7,8 @@ module.exports = {
   devtool: 'eval-source-map',
   entry: [
     'webpack/hot/dev-server',
-    'webpack-dev-server/client?http://localhost:8080',
+    'webpack-dev-server/client?http://localhost:9002',
+    'react-hot-loader/patch',
     'react-polymer/index',
     path.resolve(__dirname, 'client/Main.js')
   ],
@@ -23,7 +24,7 @@ module.exports = {
     loaders: [{
       test: /\.js$/,
       exclude: /node_modules/,
-      loaders: ['react-hot', 'babel?presets[]=react&presets[]=es2015']
+      loaders: ['react-hot-loader/webpack', 'babel?presets[]=react&presets[]=es2015']
     }]
   },
   devServer: {

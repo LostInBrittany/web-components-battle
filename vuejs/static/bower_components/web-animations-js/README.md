@@ -54,7 +54,7 @@ effect.
 
 Web Animations supports off-main-thread animations, and also allows procedural
 generation of animations and fine-grained control of animation playback. See
-<http://web-animations.github.io> for ideas and inspiration - or [web-animations-codelabs](https://github.com/web-animations/web-animations-codelabs).
+<http://web-animations.github.io> for ideas and inspiration!
 
 Native Fallback
 ---------------
@@ -87,7 +87,7 @@ interpolation/decomposition.
 
 |                        | web-animations | web-animations-next | web-animations-next-lite |
 |------------------------|:--------------:|:-------------------:|:------------------------:|
-|Size (gzipped)          | 15KB           | 18KB                | 15KB                     |
+|Size (gzipped)          | 12.5kb         | 14kb                | 10.5kb                   |
 |Element.animate         | ✔             | ✔                  | ✔                       |
 |Timing input (easings, duration, fillMode, etc.) for animation effects| ✔ | ✔ | ✔             | 
 |Playback control        | ✔             | ✔                  | ✔                       |

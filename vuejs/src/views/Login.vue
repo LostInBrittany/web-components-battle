@@ -3,8 +3,8 @@
       <frf-login
       :login-url="loginUrl"
       @login-success="onLogin">
-      <span id="title">Snowcamp 2017</span>
-      <img id="logo" src="../assets/images/snowcamp.png"/>
+      <span id="title">DEVFEST 2017</span>
+      <img slot="logo" id="logo" src="../assets/images/gde.png"/>
       </frf-login>
   </section>
 </template>

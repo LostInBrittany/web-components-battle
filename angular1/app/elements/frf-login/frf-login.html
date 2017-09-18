@@ -7,20 +7,17 @@
              :host {
                 --container-theme: {
                     border-radius: 15px;
-                }
-                ;
+                };
 
 
                 --logo-theme: {
                     border: 2px solid #880000;
                     border-radius: 50%;
-                }
-                ;
+                };
 
                 --title-theme: {
                     color: #cc0000;
-                }
-                ;
+                };
             }
 
              :host {
@@ -80,14 +77,14 @@
             }
             /* FORM LOGO*/
 
-             ::slotted(#logo) {
+            #container ::slotted(#logo) {
                 height: 64px;
                 width: 64px;
                 @apply --logo-theme;
             }
             /* FORM TITLE*/
 
-             ::slotted(#title) {
+            #container ::slotted(#title) {
                 color: black;
                 padding-left: 20px;
                 font-size: 24px;
@@ -200,6 +197,9 @@
                 
             onlogin(event) {
                 this.setContext(event.detail.userInfo);
+                this.dispatchEvent(new CustomEvent('login-success', { 
+                    detail: { userInfo: this.userInfo }, composed: true
+                }));
             }
 
             onlogout() {

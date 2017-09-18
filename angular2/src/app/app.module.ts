@@ -1,8 +1,6 @@
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 
 import { AppComponent } from './app.component';
-
-import { CoreModule } from './core/';
 import { SharedModule } from './shared/';
 
 import { AppRoutes } from './app.routes';
@@ -20,7 +18,6 @@ import { MapsComponent } from './people/maps/maps.component';
     MapsComponent
   ],
   imports: [
-    CoreModule,
     SharedModule,
     AppRoutes
   ],

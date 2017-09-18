@@ -1,32 +1,29 @@
-
-
-    <dom-module id="frf-confirm" assetpath="elements/">
+<dom-module id="frf-confirm" assetpath="elements/">
+    <template>
         <style>
             .error {
                 padding: 10px;
                 color: lightgray;
             }
         </style>
-        <template>
-            <paper-input type="{{type}}" floatinglabel="" label="{{labels.0}}" value="{{oldValue}}"></paper-input>
-            <paper-input type="{{type}}" floatinglabel="" label="{{labels.1}}" value="{{value1}}"></paper-input>
-            <paper-input type="{{type}}" floatinglabel="" label="{{labels.2}}" value="{{value2}}"></paper-input>
-            <template is="dom-if" if="{{noMatch}}">
-                <span class="error"> Les champs ne sont pas identiques</span>
-            </template>
+
+        <paper-input type="{{type}}" floatinglabel="" label="{{labels.0}}" value="{{oldValue}}"></paper-input>
+        <paper-input type="{{type}}" floatinglabel="" label="{{labels.1}}" value="{{value1}}"></paper-input>
+        <paper-input type="{{type}}" floatinglabel="" label="{{labels.2}}" value="{{value2}}"></paper-input>
+        <template is="dom-if" if="{{noMatch}}">
+            <span class="error"> Les champs ne sont pas identiques</span>
         </template>
-        <script>
-            Polymer({
-                is: 'frf-confirm',
-                defaultLabels: [
-                    'Ancien mot de passe',
-                    'Nouveau mot de passe',
-                    'Confirmer mot de passe'
-                ],
-                properties: {
+    </template>
+    <script>
+        class FrfConfirm extends Polymer.Element {
+
+            static get is() { return 'frf-confirm'; }
+
+            static get properties() {
+                return {
                     labels: {
-                        type:Array,
-                        value:[
+                        type: Array,
+                        value: [
                             'Ancien mot de passe',
                             'Nouveau mot de passe',
                             'Confirmer mot de passe'
@@ -55,24 +52,36 @@
                         value: '',
                         observer: 'validate'
                     }
-                },
-                created: function () {
-                    // this.labels = this.defaultLabels;
-                },
-                validate: function () {
-                    if (this.value1 && this.value2) {
-                        this.noMatch = this.value1 != this.value2;
-                    } else {
-                        this.noMatch = false;
-                    }
-                },
-                getValues: function () {
-                    return {
-                        oldValue: this.oldValue,
-                        newValue: this.value1
-                    };
-                },
-                hostAttributes: {'constructor': 'FrfConfirm'}
-            });
-        </script>
-    </dom-module>
+                }
+            }
+
+
+            constructor() {
+                super();
+                this.datas = {};
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+            }
+
+            validate() {
+                if (this.value1 && this.value2) {
+                    this.noMatch = this.value1 != this.value2;
+                } else {
+                    this.noMatch = false;
+                }
+            }
+
+            getValues() {
+                return {
+                    oldValue: this.oldValue,
+                    newValue: this.value1
+                };
+            }
+        }
+
+        // Register custom element definition using standard platform API
+        customElements.define(FrfConfirm.is, FrfConfirm);       
+    </script>
+</dom-module>
