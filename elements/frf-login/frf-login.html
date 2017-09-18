@@ -80,14 +80,14 @@
             }
             /* FORM LOGO*/
 
-             ::slotted(#logo) {
+            #content ::slotted(#logo) {
                 height: 64px;
                 width: 64px;
                 @apply --logo-theme;
             }
             /* FORM TITLE*/
 
-             ::slotted(#title) {
+            #content ::slotted(#title) {
                 color: black;
                 padding-left: 20px;
                 font-size: 24px;
@@ -200,6 +200,9 @@
                 
             onlogin(event) {
                 this.setContext(event.detail.userInfo);
+                this.dispatchEvent(new CustomEvent('login-success', { 
+                    detail: { userInfo: this.userInfo }, composed: true
+                }));
             }
 
             onlogout() {

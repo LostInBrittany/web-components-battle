@@ -200,6 +200,9 @@
                 
             onlogin(event) {
                 this.setContext(event.detail.userInfo);
+                this.dispatchEvent(new CustomEvent('login-success', { 
+                    detail: { userInfo: this.userInfo }, composed: true
+                }));
             }
 
             onlogout() {

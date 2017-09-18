@@ -123,7 +123,7 @@
             loginSuccess(response, event) {
                 this.handleLogin(response);
                 this.dispatchEvent(new CustomEvent('login-success', { 
-                    detail: { userInfo: this.userInfo }, composed: true
+                    detail: { userInfo: this.userInfo }, composed: false
                 }));
             }
 
