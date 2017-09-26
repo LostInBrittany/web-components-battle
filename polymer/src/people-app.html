@@ -8,7 +8,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
 <link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
@@ -124,47 +124,54 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   </template>
 
   <script>
-    Polymer({
-      is: 'people-app',
+    class PeopleApp extends Polymer.Element {
+      static get is() { return 'people-app'; }
 
-      properties: {
-        page: {
-          type: String,
-          reflectToAttribute: true,
-          observer: '_pageChanged'
-        }
-      },
+      static get properties() {
+        return {
+          page: {
+            type: String,
+            reflectToAttribute: true,
+            observer: '_pageChanged',
+          },
+        };
+      }
 
-      observers: [
-        '_routePageChanged(routeData.page)'
-      ],
+      static get observers() {
+        return [
+          '_routePageChanged(routeData.page)'
+        ];
+      }
 
-      _routePageChanged: function(page) {
+      _routePageChanged(page) {
         this.page = page || 'list';
-      },
+      }
 
-      _pageChanged: function(page) {
+      _pageChanged(page) {
         // Load page import on demand. Show 404 page if fails
-        var resolvedPageUrl = this.resolveUrl('people-' + page + '.html');
-        this.importHref(resolvedPageUrl, null, this._showPage404, true);
-      },
+        let resolvedPageUrl = this.resolveUrl('people-' + page + '.html');
+        Polymer.importHref(resolvedPageUrl, null, this._showPage404, true);
+      }
 
-      _showPage404: function() {
+      _showPage404() {
         this.page = 'view404';
-      },
+      }
 
-      _editPerson: function(evt, person) {
-        console.debug("[people-app] _editPerson", person);
-        var location="/edit/"+person.id;
+      _editPerson(evt) {
+        console.debug("[people-app] _editPerson", evt.detail.person);
+        let location="/edit/"+evt.detail.person.id;
         window.history.pushState({}, null, location);
         window.dispatchEvent(new CustomEvent('location-changed'));
-      },
-      _detailPerson: function(evt, person) {
-        console.debug("[people-app] _detailPerson", person);
-        var location="/detail/"+person.id;
+      }
+
+      _detailPerson(evt) {
+        console.debug("[people-app] _detailPerson", evt.detail.person);
+        let location="/detail/"+evt.detail.person.id;
         window.history.pushState({}, null, location);
         window.dispatchEvent(new CustomEvent('location-changed'));
-      },
-    });
+      }
+    }
+
+    window.customElements.define(PeopleApp.is, PeopleApp);
   </script>
 </dom-module>

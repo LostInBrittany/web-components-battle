@@ -54,8 +54,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         margin-bottom: 20px;
       }
       .row {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
+       @apply --layout-horizontal;
+       @apply --layout-center;
         margin-left: 10px;
         margin-right: 10px;
       }
@@ -64,12 +64,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         --iron-icon-width: 32px;
       }
       .search {
-        @apply(--layout-flex);
+       @apply --layout-flex;
       }
       .list {
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
-        @apply(--layout-center);
+       @apply --layout-horizontal;
+       @apply --layout-wrap;
+       @apply --layout-center;
       }
     </style>
 
@@ -106,40 +106,47 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   </template>
 
   <script>
-    Polymer({
-      is: 'people-list',
-      properties: {
-        name: {
-          type: String,
-          value: "list"
-        },
-        selected: {
-          type: String,
-          observer: "_selectedChanged"
-        },
-        people: {
-          type: Array
-        },
-        filter:{
-          type:String,
-          value:'',
-          observer: '_filterChanged'
-        },
-      },
+    class PeopleList extends Polymer.Element {
+      static get is() { return 'people-list'; }
 
-      _selectedChanged: function () {
+      static get properties() {
+        return {
+          name: {
+            type: String,
+            value: "list"
+          },
+          selected: {
+            type: String,
+            observer: "_selectedChanged"
+          },
+          people: {
+            type: Array
+          },
+          filter:{
+            type:String,
+            value:'',
+            observer: '_filterChanged'
+          },
+        };
+      }
+
+      _selectedChanged() {
         if (this.selected == this.name) {
           this.$.peopleService.getPeople();
         }
-      },
-      _filterChanged: function() {
+      }
+
+      _filterChanged() {
           this.$.peopleRepeat.render();
-      },
-      _nameInSearch: function(item) {
+      }
+
+      _nameInSearch(item) {
         var filter=this.filter.toLowerCase();
         return (item.firstname.toLowerCase().indexOf(filter) >= 0
           || item.lastname.toLowerCase().indexOf(filter) >= 0);
-      },
-    });
+      }
+    }
+
+    window.customElements.define(PeopleList.is, PeopleList);
   </script>
 </dom-module>

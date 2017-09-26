@@ -8,7 +8,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -19,7 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 <link rel="import" href="./people-service.html">
 <link rel="import" href="./people-styles.html">
 
-<dom-module is="people-edit">
+<dom-module id="people-edit">
 
   <template>
     <style include="people-styles">
@@ -36,7 +36,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
       }
       .card-content {
-        @apply(--layout-vertical);
+       @apply --layout-vertical;
       }
       .title {
         font-size: 24px;
@@ -50,7 +50,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
     <people-service 
         id="peopleService" 
-        current-person="{{person}}"></people-service>
+        current-person="{{person}}"
+        on-updated-person="_detailPerson"></people-service>
 
     <paper-card class="people">
       <div class="card-content">
@@ -94,39 +95,51 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     
   </template>
   <script>
-    Polymer({
-      is:"people-edit",
-      properties: {
-        id: {
-          type: String,
-          value: "",
-          observer: "_onIdChange"
-        },
-        person: {
-          type: Object,
-          value: function() {
-            return {};
-          }
-        },
-      },   
-      listeners: {
-        "updated-person": "_detailPerson"
-      },
+    class PeopleEdit extends Polymer.Element {
+      static get is() { return 'people-edit'; }
+
+      static get properties() {
+        return {
+          id: {
+            type: String,
+            value: "",
+            observer: "_onIdChange"
+          },
+          person: {
+            type: Object,
+            value: function() {
+              return {};
+            }
+          },
+        };
+      }
+
       // Observers
-      _onIdChange: function() {
+      _onIdChange() {
         if (!this.id) {
           return;
         }
         this.$.peopleService.getPersonById(this.id);
-      },  
+      }
+
       // Action listeners
-      _detailPerson: function(evt) {
-        this.fire("detail-person", this.person)
-      },  
-      _updatePerson: function(evt) {
+      _detailPerson(evt) {
+        let person = evt.detail.person;
+        console.log('[people-card] _detailPerson', { detail: { person: person }});
+        this.dispatchEvent(new CustomEvent('detail-person', { 
+          bubbles: true,
+          composed: true,
+          detail: { person: person }
+        }));
+      }
+
+      _updatePerson(evt) {
         console.debug("[people-edit] _updatePerson", this.person);
         this.$.peopleService.updatePerson(this.person);
-      },  
-    });
+      }
+    }
+
+
+    window.customElements.define(PeopleEdit.is, PeopleEdit);
   </script>
 </dom-module>

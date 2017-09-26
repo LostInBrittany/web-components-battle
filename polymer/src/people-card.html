@@ -8,7 +8,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
@@ -19,7 +19,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 <link rel="import" href="./people-styles.html">
 
-<dom-module is="people-card">
+<dom-module id="people-card">
 
   <template>
     <style include="people-styles">
@@ -36,19 +36,19 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         };
       }
       .card-content {
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
       }
       .main-content {
         display: block;
-        @apply(--layout-horizontal);
-        @apply(--layout-justified);
+        @apply --layout-horizontal;
+        @apply --layout-justified;
       }
       .additional-content {
         padding: 10px;
         display: block;
       }
       .additional-content.skills {
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
         background-color: #FAFAFA;
         margin-top: 20px;
       }
@@ -57,8 +57,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         font-weight: 400;
       }
       .additional-content.skills .skill_list {
-        @apply(--layout-horizontal);
-        @apply(--layout-wrap);
+        @apply --layout-horizontal;
+        @apply --layout-wrap;
       }
       .additional-content.skills .skill_list paper-button {
         background-color: white;
@@ -68,8 +68,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         padding: 0 2rem;
       }
       .additional-content.links {
-        @apply(--layout-horizontal);
-        @apply(--layout-center-justified);
+        @apply --layout-horizontal;
+        @apply --layout-center-justified;
       }
       .additional-content.links img {
         padding: 0 5px;
@@ -78,26 +78,26 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         paper-card {
         }
         .main-content {
-          @apply(--layout-vertical-reverse);
-          @apply(--layout-justified);
-          @apply(--layout-center);
+          @apply --layout-vertical-reverse;
+          @apply --layout-justified;
+          @apply --layout-center;
         }
         .additional-content {
-          @apply(--layout-center);
+          @apply --layout-center;
         }
         .additional-content.skills .skill_list {
-          @apply(--layout-center-justified);
+          @apply --layout-center-justified;
         }
         .photoinfo {
           margin-bottom: 15px;
         }
       }
       .info {
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
         font-size: 14px;
       }
       .contact {
-        @apply(--layout-vertical);
+        @apply --layout-vertical;
         padding-top: 30px;
       }
       .name {
@@ -107,8 +107,8 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
         cursor: pointer;
       }
       .item {
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
+        @apply --layout-horizontal;
+        @apply --layout-center;
       }
       .item iron-image {
         width: 24px;
@@ -128,9 +128,9 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       }
       .actions {
         width: 137px;
-        @apply(--layout-horizontal);
-        @apply(--layout-center);
-        @apply(--layout-around-justified);
+        @apply --layout-horizontal;
+        @apply --layout-center;
+        @apply --layout-around-justified;
 
       }
       .actions > * {
@@ -146,7 +146,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
       <div class="card-content">
         <div class="main-content">
           <div class="info textinfo">
-            <div class="name" on-tap="_detailPerson">
+            <div class="name" on-click="_detailPerson" on-tap="_detailPerson">
               {{person.firstname}} {{_uppercasedLastname}}
             </div>
             <div class="contact">
@@ -208,39 +208,58 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     </paper-card>
   </template>
   <script>
-    Polymer({
-      is:"people-card",
-      properties: {
-        person: {
-          type: Object,
-          value: function() {
-            return {};
-          }
-        },
-        showSkills: {
-          type: Boolean,
-          value: false
-        },
-        showLinks: {
-          type: Boolean,
-          value: false
-        },
-        _uppercasedLastname: {
-          type: String,
-          computed: "_uppercaseLastname(person.lastname)"
-        },
-      },
-      _uppercaseLastname: function() {
+    class PeopleCard extends Polymer.Element {
+      static get is() { return 'people-card'; }
+
+      static get properties() { 
+        return {
+          person: {
+            type: Object,
+            value: function() {
+              return {};
+            }
+          },
+          showSkills: {
+            type: Boolean,
+            value: false
+          },
+          showLinks: {
+            type: Boolean,
+            value: false
+          },
+          _uppercasedLastname: {
+            type: String,
+            computed: "_uppercaseLastname(person.lastname)"
+          },
+        };
+      }
+
+      _uppercaseLastname() {
         if (this.person && this.person.lastname) {
           return this.person.lastname.toUpperCase();
         }
-      },
-      _editPerson: function(evt) {
-        this.fire("edit-person", this.person);
-      },
-      _detailPerson: function(evt) {
-        this.fire("detail-person", this.person)
-      },        
-    });
+      }
+
+      _editPerson(evt) {
+        console.log('[people-card] _editPerson', { detail: { person: this.person }});
+        this.dispatchEvent(new CustomEvent('edit-person', { 
+          bubbles: true,
+          composed: true,
+          detail: { person: this.person }
+        }));
+      }
+
+      _detailPerson(evt) {
+        console.log('[people-card] _detailPerson', { detail: { person: this.person }});
+        this.dispatchEvent(new CustomEvent('detail-person', { 
+          bubbles: true,
+          composed: true,
+          detail: { person: this.person }
+        }));
+      }            
+    }
+        
+    window.customElements.define(PeopleCard.is, PeopleCard);
+
   </script>
 </dom-module>

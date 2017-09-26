@@ -32,44 +32,57 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   </template>
 
   <script>
-    Polymer({
-      is: 'people-service',
-      properties: {
-        apiUrl:{
-          type:String,
-          value:"http://localhost:3001/api/peoples"
-        },
-        people: {
-          type: Array,
-          value: function() {
-            return [];
-          },
-          notify: true
-        },
-        currentPerson: {
-          type: Object,
-          value: function() {
-            return {};
-          },
-          notify: true
-        }
-      },
+    class PeopleService extends Polymer.Element {
+      static get is() { return 'people-service'; }
 
-      getPeople: function () {
+      static get properties() {
+        return {
+          apiUrl:{
+            type:String,
+            value:"http://localhost:3001/api/peoples"
+          },
+          people: {
+            type: Array,
+            value: function() {
+              return [];
+            },
+            notify: true
+          },
+          currentPerson: {
+            type: Object,
+            value: function() {
+              return {};
+            },
+            notify: true
+          }
+        };
+      }
+
+      getPeople() {
         this.$.getPeople.generateRequest();
-      },
-      getPersonById: function (personId) {
+      }
+
+      getPersonById(personId) {
         this.$.getPersonById.url=this.apiUrl+"/"+personId;
         this.$.getPersonById.generateRequest();
-      },
-      updatePerson: function (person) {
+      }
+
+      updatePerson(person) {
         this.$.updatePerson.url=this.apiUrl+"/"+person.id;
         this.$.updatePerson.body=JSON.stringify(person);
         this.$.updatePerson.generateRequest();
-      },
-      onUpdate: function (event, ironRequest) {
-        this.fire('updated-person',ironRequest.response);
-      },        
-    });
+      }
+
+      onUpdate(event, ironRequest) {
+        console.log('[people-service] onUpdate', { detail: { person: ironRequest.response }});
+        this.dispatchEvent(new CustomEvent('updated-person', { 
+          bubbles: true,
+          composed: true,
+          detail: { person: ironRequest.response }
+        }));
+      }  
+    }
+
+    window.customElements.define(PeopleService.is, PeopleService);
   </script>
 </dom-module>

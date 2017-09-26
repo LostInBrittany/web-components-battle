@@ -8,7 +8,7 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 -->
-<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-image/iron-image.html">
@@ -20,7 +20,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 <link rel="import" href="./people-service.html">
 <link rel="import" href="./people-styles.html">
 
-<dom-module is="people-detail">
+<dom-module id="people-detail">
 
   <template>
     <style include="people-styles">
@@ -44,38 +44,45 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
   </template>
   <script>
-    Polymer({
-      is:"people-detail",
-      properties: {
-        id: {
-          type: String,
-          value: "",
-          observer: "_onIdChange"
-        },
-        person: {
-          type: Object,
-          value: function() {
-            return {};
-          }
-        },
-        name: {
-          type: String,
-          value: "edit"
-        },
-        selected: {
-          type: String,
-          observer: "_onSelectedChanged"
-        },
-      },
-      observers: [
+    class PeopleDetail extends Polymer.Element {
+      static get is() { return 'people-detail'; }
+
+      static get properties() {
+        return {
+          id: {
+            type: String,
+            value: "",
+          },
+          person: {
+            type: Object,
+            value: function() {
+              return {};
+            }
+          },
+          name: {
+            type: String,
+            value: "edit"
+          },
+          selected: {
+            type: String,
+          },
+        };
+      }
+
+      static get observers() { 
+        return [
         "_paramsChanged(id, selected)"
-      ],
+        ];
+      }
+
       // Observers
-      _paramsChanged: function() {
+      _paramsChanged() {
         if (this.name == this.selected  && !!this.id) {
           this.$.peopleService.getPersonById(this.id);
         }
-      },
-    });
+      }
+    }
+
+    window.customElements.define(PeopleDetail.is, PeopleDetail);
   </script>
 </dom-module>
