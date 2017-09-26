@@ -5,7 +5,11 @@
       <search-bar @search="filterPeople"></search-bar>
     </div>
     <section class="container">
-      <card-panel v-for="person in people" :person="person" @delete="deletePerson"></card-panel>
+      <card-panel 
+          v-for="person in people" 
+          :person="person" 
+          @delete="deletePerson"
+          :key="person.firstname +' '+ person.lastname"></card-panel>
     </section>
 
     <md-button class="md-fab md-fab-bottom-right md-primary" @click="showDialog">

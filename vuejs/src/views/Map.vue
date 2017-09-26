@@ -1,18 +1,24 @@
 <template>
-<section class="container">
-  <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers>    
-    <google-map-marker v-for="person in people" :latitude="person.geo.lat" :longitude="person.geo.lng"
-    draggable="true" animation="DROP" :open="person===currentPerson" :title="person.firstname +' '+ person.lastname"> 
-      <section class="layout vertical center">
+  <section class="container">
+    <google-map latitude="48.8534100" longitude="2.3488000" fit-to-markers>    
+      <google-map-marker 
+          v-for="person in people" 
+          :latitude="person.geo.lat" 
+          :longitude="person.geo.lng"
+          draggable="true" animation="DROP" 
+          :open="person===currentPerson" 
+          :title="person.firstname +' '+ person.lastname"
+          :key="person.firstname +' '+ person.lastname"> 
+        <section class="layout vertical center">
           <a class="username">
-              <span>{{person.firstname}}</span>
-              <span class="lastname">{{person.lastname}}</span>
+            <span>{{person.firstname}}</span>
+            <span class="lastname">{{person.lastname}}</span>
           </a>
           <img :src="person.photo">
-      </section>
-    </google-map-marker>
-  </google-map>
-</section>
+        </section>
+      </google-map-marker>
+    </google-map>
+  </section>
 </template>
 
 <script>

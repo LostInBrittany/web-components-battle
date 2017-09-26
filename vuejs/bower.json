@@ -1,6 +1,6 @@
 {
   "name": "webapp-exercise",
-  "dependencies": {    
+  "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0",
     "iron-meta": "PolymerElements/iron-meta#^2.0.0",
     "paper-button": "PolymerElements/paper-button#^2.0.0",
@@ -15,11 +15,13 @@
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "promise-polyfill": "polymerlabs/promise-polyfill#^2.0.0",
-    "google-map": "GoogleWebComponents/google-map#^2.0.0",    
+    "google-map": "GoogleWebComponents/google-map#^2.0.0",
     "web-animations-js": "~2.1.4",
-    "iban": "0.0.7"
+    "iban": "0.0.7",
+    "paper-card": "PolymerElements/paper-card#^2.0.0",
+    "paper-progress": "PolymerElements/paper-progress#^2.0.1"
   },
   "devDependencies": {
-    "jquery": "3.1.0"   
+    "jquery": "3.1.0"
   }
 }

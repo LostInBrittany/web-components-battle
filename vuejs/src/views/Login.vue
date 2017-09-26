@@ -1,11 +1,11 @@
 <template>
   <section class="container">    
-      <frf-login
-      :login-url="loginUrl"
-      @login-success="onLogin">
+    <frf-login
+        :login-url="loginUrl"
+        @login-success="onLogin">
       <span id="title">DEVFEST 2017</span>
       <img slot="logo" id="logo" src="../assets/images/gde.png"/>
-      </frf-login>
+    </frf-login>
   </section>
 </template>
 
