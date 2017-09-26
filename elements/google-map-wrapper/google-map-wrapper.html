@@ -1,78 +1,84 @@
-<link rel="import" href="./bower_components/polymer/polymer.html">
+<link rel="import" href="/bower_components/polymer/polymer-element.html">
 
-
-<link rel="import" href="./bower_components/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="./bower_components/google-map/google-map.html">
-<link rel="import" href="./bower_components/google-map/google-map-marker.html">
+ <link rel="import" href="/bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="/bower_components/google-map/google-map.html">
+<link rel="import" href="/bower_components/google-map/google-map-marker.html">
 
 
 <dom-module id="google-map-wrapper">
   <template>
       <style is="custom-style" include="iron-flex iron-flex-alignment iron-flex-factors iron-positioning">
-      :host{
+      :host {
         display: block;
         width: 100%;
       }
     </style>
-
-    <template is="dom-if" if="[[loaded]]">
-
-      <google-map latitude="[[latitude]]" longitude="[[longitude]]" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">
-        <template is="dom-repeat" items="[[people]]" as="person">
-          <google-map-marker
-              latitude="{{person.geo.lat}}"
-              longitude="{{person.geo.lng}}"
-              draggable="true"
-              animation="DROP"
-              open="{{_equals(person,currentPerson)}}"
-              title="{{ person.firstname }} {{ person.lastname }}">
-            <section class="layout vertical center">
-              <a class="username">
-                <span>{{person.firstname}}</span>
-                <span class="lastname">{{person.lastname}}</span>
-              </a>
-              <img src="{{person.photo}}">
-            </section>
-          </google-map-marker>
-        </template>
-      </google-map>
-    </template>
+    <dom-if if="[[loaded]]">
+      <template>
+        <google-map latitude="[[latitude]]" longitude="[[longitude]]" fit-to-markers api-key="AIzaSyB4voafjokZbBCNj4AdylLknJwNmjkbxEg">
+          <dom-repeat items="[[people]]" as="person">
+            <template>
+              <google-map-marker
+                  latitude="{{person.geo.lat}}"
+                  longitude="{{person.geo.lng}}"
+                  draggable="true"
+                  animation="DROP"
+                  open="{{_equals(person,currentPerson)}}"
+                  title="{{ person.firstname }} {{ person.lastname }}">
+                <section class="layout vertical center">
+                  <a class="username">
+                    <span>{{person.firstname}}</span>
+                    <span class="lastname">{{person.lastname}}</span>
+                  </a>
+                  <img src="{{person.photo}}">
+                </section>
+              </google-map-marker>
+            </template>
+          </dom-repeat>
+        </google-map>
+      </template>
+    </dom-if>
   </template>
   <script>
-    Polymer({
-      is: "google-map-wrapper",
-      properties: {
-        people: {
-          type: Array,
-        },
-        currentPerson: {
-          type: Object,
-        },
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
-        loaded: {
-          type: Boolean,
-          computed: "_loaded(latitude, longitude, people, currentPerson)"
-        },
-        observer: {
+    class GoogleMapWrapper extends Polymer.Element {
+      static get is() { return 'google-map-wrapper'; }
 
-        }
-      },
-      _loaded: function() {
-
-        console.debug("[google-map-wrapper] _loaded", this.latitude, this.longitude, this.people, this.latitude && this.longitude && this.people && this.people.length)
+      static get properties() {
+        return {
+          people: {
+            type: Array,
+          },
+          currentPerson: {
+            type: Object,
+          },
+          latitude: {
+            type: Number,
+          },
+          longitude: {
+            type: Number,
+          },
+          loaded: {
+            type: Boolean,
+            computed: "_loaded(latitude, longitude, people, currentPerson)"
+          }
+        };
+      }
+      
+      _loaded() {
+        console.debug("[google-map-wrapper] _loaded", this.latitude, this.longitude, this.people, 
+            this.latitude && this.longitude && this.people && this.people.length)
         return (this.latitude && this.longitude && this.people && this.people.length );
-      },
-      _equals: function(personA, personB) {
+      }
+
+      _equals(personA, personB) {
         return personA && personB && personA.email == personB.email;
-      },
-      _onPeopleChange: function() {
+      }
+
+      _onPeopleChange() {
         console.debug("[google-map-wrapper] _onPeopleChange", this.people);
-      },
-    });
+      }
+    }
+
+    window.customElements.define(GoogleMapWrapper.is, GoogleMapWrapper);
   </script>
 </dom-module>
