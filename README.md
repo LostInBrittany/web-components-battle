@@ -1,3 +1,3 @@
-# web-components-battle
+# web-components-in-frameworks
 
-Here we will put the code for our talk at DevFest Nantes
+Here is the code for our talk *Mixing Web Components in JS Frameworks*
